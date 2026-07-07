@@ -1,11 +1,9 @@
 # Elder Services Case Management Database
 
 A re-build of the kind of database structure used by Massachusetts ASAPs (Aging
-Service Access Points) such as Somerville-Cambridge Elder Services (SCES),
-modeled on the public reporting requirements every AAA must satisfy.
+Service Access Points), modeled on the public reporting requirements every AAA must satisfy.
 
-This is **not** a copy of the former Annkissam/SCES system (acquired by
-HHAeXchange in 2020, schema proprietary). It is a clean reimplementation derived
+It is a clean reimplementation derived
 from the public data dictionaries and regulations that, by law, dictate the
 shape of any ASAP case-management database:
 
