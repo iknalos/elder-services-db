@@ -22,7 +22,27 @@ Views.providers = function (root) {
   }, '+ New provider');
 
   root.append(pageHead('Providers & workers',
-    'Contracted agencies and the individuals delivering units — tables: provider, worker, worker_credential', addBtn));
+    'Contracted agencies and the individuals delivering units — tables: provider, worker, worker_credential', addBtn,
+    h('button', {
+      class: 'btn small',
+      onclick: () => {
+        const rows = [];
+        for (const p of S.all('provider')) {
+          const ws = S.all('worker').filter(w => w.provider_id === p.provider_id);
+          if (!ws.length) rows.push({ provider: p.provider_name, type: p.provider_type, worker: '', credentials: '', hired: '', status: p.is_active ? 'active' : 'inactive' });
+          for (const w of ws) {
+            const creds = S.all('worker_credential').filter(c => c.worker_id === w.worker_id)
+              .map(c => `${c.credential_name}${c.expires_at ? ' → ' + c.expires_at : ''}`).join('; ');
+            rows.push({ provider: p.provider_name, type: p.provider_type, worker: `${w.legal_first_name} ${w.legal_last_name}`, credentials: creds || (w.credentials || []).join('; '), hired: w.hire_date || '', status: w.is_active ? 'active' : 'inactive' });
+          }
+        }
+        downloadCSV('providers_workers.csv', rows, [
+          { k: 'provider', label: 'Provider' }, { k: 'type', label: 'Type' },
+          { k: 'worker', label: 'Worker' }, { k: 'credentials', label: 'Credentials' },
+          { k: 'hired', label: 'Hired' }, { k: 'status', label: 'Status' }
+        ]);
+      }
+    }, '⬇ CSV (flat)')));
 
   const soon = new Date(Date.now() + 60 * 864e5).toISOString().slice(0, 10);
   for (const p of S.all('provider')) {
@@ -124,20 +144,24 @@ Views.billing = function (root) {
   const rows = S.all('claim').slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
   root.append(dataTable(rows, [
     { k: 'claim_no', label: 'Claim #' },
-    { k: 'provider_id', label: 'Provider', render: r => S.providerName(r.provider_id), searchVal: r => S.providerName(r.provider_id) },
-    { k: 'service_date_from', label: 'Service period', render: r => fmtDate(r.service_date_from) + ' → ' + fmtDate(r.service_date_to) },
-    { k: '_lines', label: 'Lines', render: r => String(S.all('claim_line').filter(l => l.claim_id === r.claim_id).length) },
-    { k: 'total_charge_cents', label: 'Billed', render: r => money(r.total_charge_cents) },
+    { k: 'provider_id', label: 'Provider', render: r => S.providerName(r.provider_id), csv: r => S.providerName(r.provider_id), searchVal: r => S.providerName(r.provider_id) },
+    { k: 'service_date_from', label: 'Service period', render: r => fmtDate(r.service_date_from) + ' → ' + fmtDate(r.service_date_to), csv: r => `${r.service_date_from} to ${r.service_date_to}` },
+    { k: '_lines', label: 'Lines', render: r => String(S.all('claim_line').filter(l => l.claim_id === r.claim_id).length), csv: r => S.all('claim_line').filter(l => l.claim_id === r.claim_id).length },
+    { k: 'total_charge_cents', label: 'Billed', render: r => money(r.total_charge_cents), csv: r => r.total_charge_cents / 100 },
     {
       k: '_paid', label: 'Paid', render: r => {
         const paid = S.all('remittance_line').filter(l => l.claim_id === r.claim_id)
           .reduce((s, l) => s + Number(l.paid_cents || 0), 0);
         return paid ? money(paid) : '—';
+      }, csv: r => {
+        const paid = S.all('remittance_line').filter(l => l.claim_id === r.claim_id)
+          .reduce((s, l) => s + Number(l.paid_cents || 0), 0);
+        return paid ? paid / 100 : '';
       }
     },
     { k: 'status', label: 'Status', render: r => statusBadge(r.status) },
-    { k: '_act', label: '', render: r => claimAction(r) }
-  ], { sortKey: 'claim_no', sortDir: -1, searchable: false }));
+    { k: '_act', label: '', render: r => claimAction(r), csv: () => '' }
+  ], { sortKey: 'claim_no', sortDir: -1, exportName: 'claims', searchable: false }));
 
   function claimAction(r) {
     if (r.status === 'ready' || r.status === 'draft') return h('button', {
@@ -382,14 +406,13 @@ Views.data = function (root) {
           () => { seedDemoData(); toast('Demo data reset'); route(); })
       }, '↺ Reset demo data')));
 
-  const audit = h('div', { class: 'card' }, h('h3', {}, 'Audit log (latest 25)'),
-    h('p', { class: 'card-sub' }, 'Mirror of the generic_audit() trigger: who/what/when for every write.'),
-    h('table', { class: 'table' },
-      h('thead', {}, h('tr', {}, ['When', 'Table', 'Op'].map(x => h('th', {}, x)))),
-      h('tbody', {}, S.all('audit_log').slice(-25).reverse().map(a => h('tr', {},
-        h('td', {}, new Date(a.audited_at).toLocaleString()),
-        h('td', {}, a.table_name),
-        h('td', {}, badge({ I: 'insert', U: 'update', D: 'delete' }[a.operation], { I: 'ok', U: 'info', D: 'err' }[a.operation])))))));
+  const audit = h('div', {},
+    dataTable(S.all('audit_log').slice(-200).reverse(), [
+      { k: 'audited_at', label: 'When', render: r => new Date(r.audited_at).toLocaleString(), csv: r => r.audited_at },
+      { k: 'table_name', label: 'Table' },
+      { k: 'operation', label: 'Op', render: r => badge({ I: 'insert', U: 'update', D: 'delete' }[r.operation], { I: 'ok', U: 'info', D: 'err' }[r.operation]), csv: r => ({ I: 'insert', U: 'update', D: 'delete' }[r.operation] || r.operation) }
+    ], { exportName: 'audit_log', title: 'Audit log (latest 200)', empty: 'No audit entries yet.' }),
+    h('p', { class: 'muted note' }, 'Mirror of the generic_audit() trigger: who/what/when for every write. Older entries drop off after 2000 records.'));
 
   root.append(counts, actions, audit);
 };

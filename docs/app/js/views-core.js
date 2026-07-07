@@ -108,13 +108,13 @@ Views.clients = function (root, params) {
     h('button', { class: 'btn primary', onclick: () => clientForm(null, () => route()) }, '+ New client')));
   root.append(dataTable(S.all('client'), [
     { k: 'client_number', label: 'Client #' },
-    { k: 'legal_last_name', label: 'Name', render: r => h('strong', {}, `${r.legal_last_name}, ${r.legal_first_name}`), searchVal: r => r.legal_last_name + ' ' + r.legal_first_name },
-    { k: 'date_of_birth', label: 'Age', render: r => `${ageOf(r.date_of_birth)} (${fmtDate(r.date_of_birth)})`, sortVal: r => r.date_of_birth },
+    { k: 'legal_last_name', label: 'Name', render: r => h('strong', {}, `${r.legal_last_name}, ${r.legal_first_name}`), csv: r => `${r.legal_last_name}, ${r.legal_first_name}`, searchVal: r => r.legal_last_name + ' ' + r.legal_first_name },
+    { k: 'date_of_birth', label: 'Age', render: r => `${ageOf(r.date_of_birth)} (${fmtDate(r.date_of_birth)})`, csv: r => r.date_of_birth, sortVal: r => r.date_of_birth },
     { k: 'primary_phone', label: 'Phone' },
     { k: 'preferred_language', label: 'Language', render: r => r.preferred_language + (r.interpreter_needed ? ' 🗣' : '') },
-    { k: 'primary_org_staff_id', label: 'Care manager', render: r => S.staffName(r.primary_org_staff_id), searchVal: r => S.staffName(r.primary_org_staff_id) },
-    { k: 'is_active', label: 'Status', render: r => badge(r.is_active ? 'active' : 'inactive', r.is_active ? 'ok' : 'muted') }
-  ], { sortKey: 'legal_last_name', onRow: r => location.hash = '#clients/' + r.client_id }));
+    { k: 'primary_org_staff_id', label: 'Care manager', render: r => S.staffName(r.primary_org_staff_id), csv: r => S.staffName(r.primary_org_staff_id), searchVal: r => S.staffName(r.primary_org_staff_id) },
+    { k: 'is_active', label: 'Status', render: r => badge(r.is_active ? 'active' : 'inactive', r.is_active ? 'ok' : 'muted'), csv: r => r.is_active ? 'active' : 'inactive' }
+  ], { sortKey: 'legal_last_name', exportName: 'clients', onRow: r => location.hash = '#clients/' + r.client_id }));
 };
 
 function clientDetail(root, clientId) {
@@ -224,13 +224,13 @@ Views.referrals = function (root) {
 
   const rows = S.all('referral').slice().sort((a, b) => b.referred_at.localeCompare(a.referred_at));
   root.append(dataTable(rows, [
-    { k: 'referred_at', label: 'Received', render: r => fmtDate(r.referred_at.slice(0, 10)) },
-    { k: 'referral_source_id', label: 'Source', render: r => (S.get('referral_source', r.referral_source_id) || {}).name, searchVal: r => (S.get('referral_source', r.referral_source_id) || {}).name },
-    { k: 'client_id', label: 'Client', render: r => r.client_id ? h('a', { href: '#clients/' + r.client_id }, S.clientName(r.client_id)) : h('em', { class: 'muted' }, 'not yet a client'), searchVal: r => S.clientName(r.client_id) },
+    { k: 'referred_at', label: 'Received', render: r => fmtDate(r.referred_at.slice(0, 10)), csv: r => r.referred_at.slice(0, 10) },
+    { k: 'referral_source_id', label: 'Source', render: r => (S.get('referral_source', r.referral_source_id) || {}).name, csv: r => (S.get('referral_source', r.referral_source_id) || {}).name || '', searchVal: r => (S.get('referral_source', r.referral_source_id) || {}).name },
+    { k: 'client_id', label: 'Client', render: r => r.client_id ? h('a', { href: '#clients/' + r.client_id }, S.clientName(r.client_id)) : h('em', { class: 'muted' }, 'not yet a client'), csv: r => r.client_id ? S.clientName(r.client_id) : '', searchVal: r => S.clientName(r.client_id) },
     { k: 'presenting_need', label: 'Presenting need' },
     { k: 'urgency', label: 'Urgency', render: r => badge(r.urgency, { emergency: 'err', urgent: 'warn', routine: 'info', information_only: 'muted' }[r.urgency]) },
-    { k: 'outcome', label: 'Outcome', render: r => r.outcome ? statusBadge(r.outcome) : triageBtn(r) }
-  ], { sortKey: 'referred_at', sortDir: -1, empty: 'No referrals yet — add the first one.' }));
+    { k: 'outcome', label: 'Outcome', render: r => r.outcome ? statusBadge(r.outcome) : triageBtn(r), csv: r => r.outcome || '' }
+  ], { sortKey: 'referred_at', sortDir: -1, exportName: 'referrals', empty: 'No referrals yet — add the first one.' }));
 
   function triageBtn(r) {
     return h('button', {

@@ -10,13 +10,13 @@ Views.cases = function (root, params) {
   root.append(pageHead('Cases', 'Active service relationships — tables: intake_case, assessment, care_plan'));
   root.append(dataTable(S.all('intake_case'), [
     { k: 'case_number', label: 'Case #' },
-    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
-    { k: 'program_id', label: 'Program', render: r => S.programName(r.program_id), searchVal: r => S.programName(r.program_id) },
+    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), csv: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
+    { k: 'program_id', label: 'Program', render: r => S.programName(r.program_id), csv: r => S.programName(r.program_id), searchVal: r => S.programName(r.program_id) },
     { k: 'case_type', label: 'Type', render: r => label(r.case_type) },
     { k: 'opened_at', label: 'Opened', render: r => fmtDate(r.opened_at) },
-    { k: 'primary_staff_id', label: 'Staff', render: r => S.staffName(r.primary_staff_id) },
-    { k: 'closed_at', label: 'Status', render: r => r.closed_at ? badge('closed', 'muted') : badge('open', 'ok') }
-  ], { sortKey: 'opened_at', sortDir: -1, onRow: r => location.hash = '#cases/' + r.intake_case_id }));
+    { k: 'primary_staff_id', label: 'Staff', render: r => S.staffName(r.primary_staff_id), csv: r => S.staffName(r.primary_staff_id) },
+    { k: 'closed_at', label: 'Status', render: r => r.closed_at ? badge('closed', 'muted') : badge('open', 'ok'), csv: r => r.closed_at ? 'closed' : 'open' }
+  ], { sortKey: 'opened_at', sortDir: -1, exportName: 'cases', onRow: r => location.hash = '#cases/' + r.intake_case_id }));
 };
 
 function caseDetail(root, caseId) {
@@ -171,19 +171,25 @@ Views.authorizations = function (root) {
   const rows = S.all('service_authorization');
   root.append(dataTable(rows, [
     { k: 'authorization_no', label: 'Auth #' },
-    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
-    { k: 'program_id', label: 'Program', render: r => S.programName(r.program_id) },
+    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), csv: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
+    { k: 'program_id', label: 'Program', render: r => S.programName(r.program_id), csv: r => S.programName(r.program_id) },
     {
       k: '_svc', label: 'Service', render: r => {
         const b = S.all('authorized_unit_batch').find(x => x.authorization_id === r.authorization_id);
         return b ? S.serviceName(b.service_id) : '—';
+      }, csv: r => {
+        const b = S.all('authorized_unit_batch').find(x => x.authorization_id === r.authorization_id);
+        return b ? S.serviceName(b.service_id) : '';
       }
     },
-    { k: 'end_date', label: 'Period', render: r => fmtDate(r.effective_date) + ' → ' + fmtDate(r.end_date), sortVal: r => r.end_date },
+    { k: 'end_date', label: 'Period', render: r => fmtDate(r.effective_date) + ' → ' + fmtDate(r.end_date), csv: r => `${r.effective_date} to ${r.end_date}`, sortVal: r => r.end_date },
     {
       k: '_util', label: 'Utilization', render: r => {
         const u = S.authUtilization(r.authorization_id);
         return h('div', { class: 'util-cell' }, h('span', { class: 'muted' }, `${u.consumed}/${u.authorized}`), progressBar(u.pct));
+      }, csv: r => {
+        const u = S.authUtilization(r.authorization_id);
+        return `${u.consumed}/${u.authorized} (${u.pct}%)`;
       }, sortVal: r => S.authUtilization(r.authorization_id).pct
     },
     { k: 'status', label: 'Status', render: r => statusBadge(r.status) },
@@ -206,9 +212,9 @@ Views.authorizations = function (root) {
             toast('Batch added — authorization amended'); route();
           });
         }
-      }, 'Amend')
+      }, 'Amend'), csv: () => ''
     }
-  ], { sortKey: '_util', sortDir: -1 }));
+  ], { sortKey: '_util', sortDir: -1, exportName: 'authorizations' }));
 };
 
 /* ------------------------------------------------ deliveries */
@@ -257,11 +263,11 @@ Views.deliveries = function (root) {
   const rows = S.all('service_delivery').slice().sort((a, b) => (b.scheduled_date || '').localeCompare(a.scheduled_date || ''));
   root.append(dataTable(rows, [
     { k: 'scheduled_date', label: 'Date', render: r => fmtDate(r.scheduled_date) },
-    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
-    { k: 'service_id', label: 'Service', render: r => S.serviceName(r.service_id), searchVal: r => S.serviceName(r.service_id) },
-    { k: 'worker_id', label: 'Worker', render: r => r.worker_id ? S.workerName(r.worker_id) : '—', searchVal: r => S.workerName(r.worker_id) },
-    { k: 'unit_count', label: 'Units', render: r => `${r.unit_count} ${r.unit_type}(s)` },
-    { k: 'evv_reference', label: 'EVV', render: r => r.evv_reference ? badge('verified', 'ok') : h('span', { class: 'muted' }, '—') },
+    { k: 'client_id', label: 'Client', render: r => S.clientName(r.client_id), csv: r => S.clientName(r.client_id), searchVal: r => S.clientName(r.client_id) },
+    { k: 'service_id', label: 'Service', render: r => S.serviceName(r.service_id), csv: r => S.serviceName(r.service_id), searchVal: r => S.serviceName(r.service_id) },
+    { k: 'worker_id', label: 'Worker', render: r => r.worker_id ? S.workerName(r.worker_id) : '—', csv: r => r.worker_id ? S.workerName(r.worker_id) : '', searchVal: r => S.workerName(r.worker_id) },
+    { k: 'unit_count', label: 'Units', render: r => `${r.unit_count} ${r.unit_type}(s)`, csv: r => `${r.unit_count} ${r.unit_type}` },
+    { k: 'evv_reference', label: 'EVV', render: r => r.evv_reference ? badge('verified', 'ok') : h('span', { class: 'muted' }, '—'), csv: r => r.evv_reference ? 'verified' : '' },
     { k: 'status', label: 'Status', render: r => statusBadge(r.status) },
     {
       k: '_act', label: '', render: r => r.status === 'scheduled' ? h('button', {
@@ -272,7 +278,7 @@ Views.deliveries = function (root) {
             toast('Marked delivered'); route();
           } catch (err) { toast(err.message, 'err'); }
         }
-      }, 'Mark delivered') : null
+      }, 'Mark delivered') : null, csv: () => ''
     }
-  ], { sortKey: 'scheduled_date', sortDir: -1 }));
+  ], { sortKey: 'scheduled_date', sortDir: -1, exportName: 'deliveries' }));
 };

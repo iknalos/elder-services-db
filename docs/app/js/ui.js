@@ -50,6 +50,13 @@ function progressBar(pct, warnAt = 85) {
 function dataTable(rows, cols, opts = {}) {
   const wrap = h('div', { class: 'card table-card' });
   let sortKey = opts.sortKey || null, sortDir = opts.sortDir || 1, query = '';
+  let working = [...rows];
+  const exportName = opts.exportName || 'export';
+
+  const csvBtn = opts.exportable !== false ? h('button', {
+    class: 'btn small', title: 'Export the current view to CSV',
+    onclick: () => downloadCSV(exportName + '.csv', working, cols)
+  }, '⬇ CSV') : null;
 
   const head = h('div', { class: 'table-head' },
     opts.title ? h('h3', {}, opts.title) : null,
@@ -58,6 +65,7 @@ function dataTable(rows, cols, opts = {}) {
       class: 'input search', type: 'search', placeholder: 'Search…',
       oninput: e => { query = e.target.value.toLowerCase(); paint(); }
     }) : null,
+    csvBtn,
     ...(opts.actions || []));
 
   const tbl = h('table', { class: 'table' });
@@ -78,6 +86,8 @@ function dataTable(rows, cols, opts = {}) {
         return (va > vb ? 1 : va < vb ? -1 : 0) * sortDir;
       });
     }
+    working = data;
+    if (csvBtn) csvBtn.disabled = !data.length;
     tbl.innerHTML = '';
     tbl.append(h('thead', {}, h('tr', {}, cols.map(c =>
       h('th', {
@@ -175,9 +185,18 @@ function statCard(value, labelText, sub, kind = '') {
 
 function downloadCSV(filename, rows, cols) {
   const esc = v => { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const cell = (c, r) => {
+    if (c.csv) return c.csv(r);
+    if (c.render) {
+      const node = c.render(r);
+      if (node && node.nodeType) return node.textContent;
+      if (node != null) return String(node);
+    }
+    return r[c.k];
+  };
   const lines = [cols.map(c => esc(c.label)).join(',')];
-  rows.forEach(r => lines.push(cols.map(c => esc(c.csv ? c.csv(r) : r[c.k])).join(',')));
-  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  rows.forEach(r => lines.push(cols.map(c => esc(cell(c, r))).join(',')));
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
   const a = h('a', { href: URL.createObjectURL(blob), download: filename });
   a.click();
   URL.revokeObjectURL(a.href);
