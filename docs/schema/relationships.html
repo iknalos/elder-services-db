@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>elder_services.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="bower/html5shiv/html5shiv.min.js"></script>
+        <script src="bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="index.html" class="navbar-brand"><b>elder_services</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>All Relationships</h1>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 class="box-title">Diagrams</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom">
+                                <!-- Tabs within a box -->
+                                <h5>By default only columns that are primary keys, foreign keys or indexes are shown.</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#compactDegreeImg-chart" data-toggle="tab" aria-expanded="true">Compact</a></li>
+                                    <li class=""><a href="#largeDegreeImg-chart" data-toggle="tab" aria-expanded="true">Large</a></li>
+                                    <li class=""><a href="#compactimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Compact Implied</a></li>
+                                    <li class=""><a href="#largeimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Large Implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="compactDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="compactRelationshipsDiagram" name="compactRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/payroll_line.html" target="_top" title="payroll_line" alt="" coords="1575,2960,1876,3165">
+<area shape="rect" id="node5" href="tables/timesheet.html" target="_top" title="timesheet" alt="" coords="1291,2607,1480,2871">
+<area shape="rect" id="node6" href="tables/worker.html" target="_top" title="worker" alt="" coords="916,2953,1132,3100">
+<area shape="rect" id="node10" href="tables/payroll_run.html" target="_top" title="payroll_run" alt="" coords="1276,3189,1495,3395">
+<area shape="rect" id="node2" href="tables/household_member.html" target="_top" title="household_member" alt="" coords="887,1145,1160,1292">
+<area shape="rect" id="node25" href="tables/client.html" target="_top" title="client" alt="" coords="559,1609,807,1903">
+<area shape="rect" id="node3" href="tables/audit_log.html" target="_top" title="audit_log" alt="" coords="2054,40,2275,245">
+<area shape="rect" id="node4" href="tables/referral.html" target="_top" title="referral" alt="" coords="898,441,1149,735">
+<area shape="rect" id="node8" href="tables/organization.html" target="_top" title="organization" alt="" coords="55,1921,270,2097">
+<area shape="rect" id="node17" href="tables/referral_source.html" target="_top" title="referral_source" alt="" coords="567,500,799,647">
+<area shape="rect" id="node32" href="tables/staff.html" target="_top" title="staff" alt="" coords="314,2347,515,2523">
+<area shape="rect" id="node36" href="tables/program.html" target="_top" title="program" alt="" coords="578,1993,788,2199">
+<area shape="rect" id="node11" href="tables/self_direction_enrollment.html" target="_top" title="self_direction_enrollment" alt="" coords="858,2423,1189,2628">
+<area shape="rect" id="node30" href="tables/provider.html" target="_top" title="provider" alt="" coords="578,2983,788,3159">
+<area shape="rect" id="node7" href="tables/claim.html" target="_top" title="claim" alt="" coords="908,3408,1140,3701">
+<area shape="rect" id="node9" href="tables/role.html" target="_top" title="role" alt="" coords="340,3241,489,3388">
+<area shape="rect" id="node12" href="tables/claim_line.html" target="_top" title="claim_line" alt="" coords="2898,2772,3119,2977">
+<area shape="rect" id="node27" href="tables/service_delivery.html" target="_top" title="service_delivery" alt="" coords="2602,2407,2843,2847">
+<area shape="rect" id="node35" href="tables/service_definition.html" target="_top" title="service_definition" alt="" coords="1240,1673,1531,1849">
+<area shape="rect" id="node13" href="tables/care_plan_service.html" target="_top" title="care_plan_service" alt="" coords="1598,1997,1853,2173">
+<area shape="rect" id="node16" href="tables/care_plan.html" target="_top" title="care_plan" alt="" coords="1291,1903,1480,2137">
+<area shape="rect" id="node14" href="tables/sd_budget_line.html" target="_top" title="sd_budget_line" alt="" coords="1271,2407,1500,2553">
+<area shape="rect" id="node15" href="tables/emergency_contact.html" target="_top" title="emergency_contact" alt="" coords="887,1309,1160,1485">
+<area shape="rect" id="node19" href="tables/intake_case.html" target="_top" title="intake_case" alt="" coords="920,2069,1127,2333">
+<area shape="rect" id="node18" href="tables/client_napis_profile.html" target="_top" title="client_napis_profile" alt="" coords="888,1503,1160,1620">
+<area shape="rect" id="node20" href="tables/authorized_unit_batch.html" target="_top" title="authorized_unit_batch" alt="" coords="2258,1597,2558,1803">
+<area shape="rect" id="node24" href="tables/service_authorization.html" target="_top" title="service_authorization" alt="" coords="1920,1627,2214,1949">
+<area shape="rect" id="node21" href="tables/remittance_line.html" target="_top" title="remittance_line" alt="" coords="3174,2684,3416,2889">
+<area shape="rect" id="node26" href="tables/remittance.html" target="_top" title="remittance" alt="" coords="2618,799,2826,975">
+<area shape="rect" id="node22" href="tables/staff_role.html" target="_top" title="staff_role" alt="" coords="595,3212,771,3388">
+<area shape="rect" id="node23" href="tables/caregiver.html" target="_top" title="caregiver" alt="" coords="922,981,1126,1128">
+<area shape="rect" id="node28" href="tables/consent.html" target="_top" title="consent" alt="" coords="912,752,1136,928">
+<area shape="rect" id="node29" href="tables/care_plan_goal.html" target="_top" title="care_plan_goal" alt="" coords="1612,2407,1839,2553">
+<area shape="rect" id="node31" href="tables/timesheet_line.html" target="_top" title="timesheet_line" alt="" coords="2887,2265,3130,2500">
+<area shape="rect" id="node33" href="tables/client_program_enrollment.html" target="_top" title="client_program_enrollment" alt="" coords="851,1745,1196,1980">
+<area shape="rect" id="node34" href="tables/worker_credential.html" target="_top" title="worker_credential" alt="" coords="1256,2996,1515,3172">
+<area shape="rect" id="node37" href="tables/staff_program_assignment.html" target="_top" title="staff_program_assignment" alt="" coords="852,2645,1195,2792">
+<area shape="rect" id="node38" href="tables/assessment.html" target="_top" title="assessment" alt="" coords="1278,2155,1494,2389">
+<area shape="rect" id="node39" href="tables/v_credential_expiration.html" target="_top" title="v_credential_expiration" alt="" coords="518,123,826,245">
+<area shape="rect" id="node40" href="tables/v_claim_reconciliation.html" target="_top" title="v_claim_reconciliation" alt="" coords="6,5,300,245">
+<area shape="rect" id="node41" href="tables/v_authorization_utilization.html" target="_top" title="v_authorization_utilization" alt="" coords="1030,123,1368,245">
+<area shape="rect" id="node42" href="tables/v_units_by_program_quarter.html" target="_top" title="v_units_by_program_quarter" alt="" coords="2438,152,2795,245">
+<area shape="rect" id="node43" href="tables/v_oaa_client_profile.html" target="_top" title="v_oaa_client_profile" alt="" coords="1542,123,1839,245">
+<area shape="rect" id="node44" href="tables/v_sd_budget_utilization.html" target="_top" title="v_sd_budget_utilization" alt="" coords="2950,152,3259,245">
+</map>
+                                        <a name='diagram'><img id="compactDegreeImg" src="diagrams/summary/relationships.real.compact.png" usemap="#compactRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="largeDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="largeRelationshipsDiagram" name="largeRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/payroll_line.html" target="_top" title="payroll_line" alt="" coords="1576,5064,1877,5598">
+<area shape="rect" id="node5" href="tables/timesheet.html" target="_top" title="timesheet" alt="" coords="1292,3399,1481,3903">
+<area shape="rect" id="node6" href="tables/worker.html" target="_top" title="worker" alt="" coords="917,4734,1133,5208">
+<area shape="rect" id="node10" href="tables/payroll_run.html" target="_top" title="payroll_run" alt="" coords="1277,5123,1496,5598">
+<area shape="rect" id="node2" href="tables/household_member.html" target="_top" title="household_member" alt="" coords="888,1636,1161,2052">
+<area shape="rect" id="node25" href="tables/client.html" target="_top" title="client" alt="" coords="560,2386,808,3095">
+<area shape="rect" id="node3" href="tables/audit_log.html" target="_top" title="audit_log" alt="" coords="3729,2342,3951,2699">
+<area shape="rect" id="node4" href="tables/referral.html" target="_top" title="referral" alt="" coords="899,206,1150,710">
+<area shape="rect" id="node8" href="tables/organization.html" target="_top" title="organization" alt="" coords="56,2866,271,3340">
+<area shape="rect" id="node17" href="tables/referral_source.html" target="_top" title="referral_source" alt="" coords="568,264,800,475">
+<area shape="rect" id="node32" href="tables/staff.html" target="_top" title="staff" alt="" coords="315,3286,516,3702">
+<area shape="rect" id="node36" href="tables/program.html" target="_top" title="program" alt="" coords="579,3819,789,4235">
+<area shape="rect" id="node11" href="tables/self_direction_enrollment.html" target="_top" title="self_direction_enrollment" alt="" coords="859,3931,1190,4318">
+<area shape="rect" id="node30" href="tables/provider.html" target="_top" title="provider" alt="" coords="579,4875,789,5379">
+<area shape="rect" id="node7" href="tables/claim.html" target="_top" title="claim" alt="" coords="909,5683,1141,6246">
+<area shape="rect" id="node9" href="tables/role.html" target="_top" title="role" alt="" coords="341,5680,490,5862">
+<area shape="rect" id="node12" href="tables/claim_line.html" target="_top" title="claim_line" alt="" coords="2899,5136,3120,5640">
+<area shape="rect" id="node27" href="tables/service_delivery.html" target="_top" title="service_delivery" alt="" coords="2603,4414,2844,5211">
+<area shape="rect" id="node35" href="tables/service_definition.html" target="_top" title="service_definition" alt="" coords="1241,3024,1532,3382">
+<area shape="rect" id="node13" href="tables/care_plan_service.html" target="_top" title="care_plan_service" alt="" coords="1599,2428,1854,2786">
+<area shape="rect" id="node16" href="tables/care_plan.html" target="_top" title="care_plan" alt="" coords="1292,792,1481,1150">
+<area shape="rect" id="node14" href="tables/sd_budget_line.html" target="_top" title="sd_budget_line" alt="" coords="1272,3920,1501,4219">
+<area shape="rect" id="node15" href="tables/emergency_contact.html" target="_top" title="emergency_contact" alt="" coords="888,2070,1161,2368">
+<area shape="rect" id="node19" href="tables/intake_case.html" target="_top" title="intake_case" alt="" coords="921,3080,1128,3467">
+<area shape="rect" id="node18" href="tables/client_napis_profile.html" target="_top" title="client_napis_profile" alt="" coords="889,2386,1161,2919">
+<area shape="rect" id="node20" href="tables/authorized_unit_batch.html" target="_top" title="authorized_unit_batch" alt="" coords="2259,2934,2559,3350">
+<area shape="rect" id="node24" href="tables/service_authorization.html" target="_top" title="service_authorization" alt="" coords="1921,2839,2215,3314">
+<area shape="rect" id="node21" href="tables/remittance_line.html" target="_top" title="remittance_line" alt="" coords="3175,5048,3417,5376">
+<area shape="rect" id="node26" href="tables/remittance.html" target="_top" title="remittance" alt="" coords="2619,1246,2827,1574">
+<area shape="rect" id="node22" href="tables/staff_role.html" target="_top" title="staff_role" alt="" coords="596,5651,772,5862">
+<area shape="rect" id="node23" href="tables/caregiver.html" target="_top" title="caregiver" alt="" coords="923,1203,1127,1619">
+<area shape="rect" id="node28" href="tables/consent.html" target="_top" title="consent" alt="" coords="913,727,1137,1114">
+<area shape="rect" id="node29" href="tables/care_plan_goal.html" target="_top" title="care_plan_goal" alt="" coords="1613,763,1840,1150">
+<area shape="rect" id="node31" href="tables/timesheet_line.html" target="_top" title="timesheet_line" alt="" coords="2888,2734,3131,3091">
+<area shape="rect" id="node33" href="tables/client_program_enrollment.html" target="_top" title="client_program_enrollment" alt="" coords="852,3484,1197,3842">
+<area shape="rect" id="node34" href="tables/worker_credential.html" target="_top" title="worker_credential" alt="" coords="1257,4807,1516,5106">
+<area shape="rect" id="node37" href="tables/staff_program_assignment.html" target="_top" title="staff_program_assignment" alt="" coords="853,4335,1196,4516">
+<area shape="rect" id="node38" href="tables/assessment.html" target="_top" title="assessment" alt="" coords="1279,4236,1495,4682">
+<area shape="rect" id="node39" href="tables/v_credential_expiration.html" target="_top" title="v_credential_expiration" alt="" coords="3729,4020,4037,4295">
+<area shape="rect" id="node40" href="tables/v_claim_reconciliation.html" target="_top" title="v_claim_reconciliation" alt="" coords="3729,535,4024,1103">
+<area shape="rect" id="node41" href="tables/v_authorization_utilization.html" target="_top" title="v_authorization_utilization" alt="" coords="3729,2898,4068,3231">
+<area shape="rect" id="node42" href="tables/v_units_by_program_quarter.html" target="_top" title="v_units_by_program_quarter" alt="" coords="3729,3459,4087,3763">
+<area shape="rect" id="node43" href="tables/v_oaa_client_profile.html" target="_top" title="v_oaa_client_profile" alt="" coords="3729,1451,4027,1990">
+<area shape="rect" id="node44" href="tables/v_sd_budget_utilization.html" target="_top" title="v_sd_budget_utilization" alt="" coords="3729,4494,4039,4827">
+</map>
+                                        <a name='diagram'><img id="largeDegreeImg" src="diagrams/summary/relationships.real.large.png" usemap="#largeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="compactimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="compactImpliedRelationshipsDiagram" name="compactImpliedRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/payroll_line.html" target="_top" title="payroll_line" alt="" coords="2647,2453,2948,2658">
+<area shape="rect" id="node5" href="tables/timesheet.html" target="_top" title="timesheet" alt="" coords="2335,2099,2524,2363">
+<area shape="rect" id="node6" href="tables/worker.html" target="_top" title="worker" alt="" coords="1943,2675,2159,2822">
+<area shape="rect" id="node10" href="tables/payroll_run.html" target="_top" title="payroll_run" alt="" coords="1942,2453,2160,2658">
+<area shape="rect" id="node2" href="tables/household_member.html" target="_top" title="household_member" alt="" coords="893,661,1166,807">
+<area shape="rect" id="node25" href="tables/client.html" target="_top" title="client" alt="" coords="559,1289,807,1582">
+<area shape="rect" id="node3" href="tables/audit_log.html" target="_top" title="audit_log" alt="" coords="1826,3519,2047,3725">
+<area shape="rect" id="node4" href="tables/referral.html" target="_top" title="referral" alt="" coords="904,278,1155,571">
+<area shape="rect" id="node8" href="tables/organization.html" target="_top" title="organization" alt="" coords="55,2131,270,2307">
+<area shape="rect" id="node17" href="tables/referral_source.html" target="_top" title="referral_source" alt="" coords="567,189,799,335">
+<area shape="rect" id="node32" href="tables/staff.html" target="_top" title="staff" alt="" coords="314,1630,515,1806">
+<area shape="rect" id="node36" href="tables/program.html" target="_top" title="program" alt="" coords="578,2102,788,2307">
+<area shape="rect" id="node11" href="tables/self_direction_enrollment.html" target="_top" title="self_direction_enrollment" alt="" coords="1886,2046,2216,2251">
+<area shape="rect" id="node30" href="tables/provider.html" target="_top" title="provider" alt="" coords="1609,2505,1820,2681">
+<area shape="rect" id="node7" href="tables/claim.html" target="_top" title="claim" alt="" coords="1935,2911,2167,3205">
+<area shape="rect" id="node9" href="tables/role.html" target="_top" title="role" alt="" coords="340,418,489,565">
+<area shape="rect" id="node12" href="tables/claim_line.html" target="_top" title="claim_line" alt="" coords="3007,2790,3228,2995">
+<area shape="rect" id="node27" href="tables/service_delivery.html" target="_top" title="service_delivery" alt="" coords="2677,1531,2918,1971">
+<area shape="rect" id="node35" href="tables/service_definition.html" target="_top" title="service_definition" alt="" coords="1252,1749,1543,1925">
+<area shape="rect" id="node13" href="tables/care_plan_service.html" target="_top" title="care_plan_service" alt="" coords="1587,1159,1842,1335">
+<area shape="rect" id="node16" href="tables/care_plan.html" target="_top" title="care_plan" alt="" coords="1303,746,1492,981">
+<area shape="rect" id="node14" href="tables/sd_budget_line.html" target="_top" title="sd_budget_line" alt="" coords="2315,1935,2544,2082">
+<area shape="rect" id="node15" href="tables/emergency_contact.html" target="_top" title="emergency_contact" alt="" coords="893,825,1166,1001">
+<area shape="rect" id="node19" href="tables/intake_case.html" target="_top" title="intake_case" alt="" coords="926,1389,1133,1653">
+<area shape="rect" id="node18" href="tables/client_napis_profile.html" target="_top" title="client_napis_profile" alt="" coords="894,1018,1166,1135">
+<area shape="rect" id="node20" href="tables/authorized_unit_batch.html" target="_top" title="authorized_unit_batch" alt="" coords="2280,1350,2580,1555">
+<area shape="rect" id="node24" href="tables/service_authorization.html" target="_top" title="service_authorization" alt="" coords="1904,1373,2198,1695">
+<area shape="rect" id="node21" href="tables/remittance_line.html" target="_top" title="remittance_line" alt="" coords="3309,2702,3552,2907">
+<area shape="rect" id="node26" href="tables/remittance.html" target="_top" title="remittance" alt="" coords="3014,2597,3222,2773">
+<area shape="rect" id="node22" href="tables/staff_role.html" target="_top" title="staff_role" alt="" coords="595,389,771,565">
+<area shape="rect" id="node23" href="tables/caregiver.html" target="_top" title="caregiver" alt="" coords="928,1153,1132,1299">
+<area shape="rect" id="node28" href="tables/consent.html" target="_top" title="consent" alt="" coords="918,85,1142,261">
+<area shape="rect" id="node29" href="tables/care_plan_goal.html" target="_top" title="care_plan_goal" alt="" coords="1601,717,1828,863">
+<area shape="rect" id="node31" href="tables/timesheet_line.html" target="_top" title="timesheet_line" alt="" coords="2996,1607,3239,1842">
+<area shape="rect" id="node33" href="tables/client_program_enrollment.html" target="_top" title="client_program_enrollment" alt="" coords="857,1814,1202,2049">
+<area shape="rect" id="node34" href="tables/worker_credential.html" target="_top" title="worker_credential" alt="" coords="2300,2525,2559,2701">
+<area shape="rect" id="node37" href="tables/staff_program_assignment.html" target="_top" title="staff_program_assignment" alt="" coords="858,2357,1201,2503">
+<area shape="rect" id="node38" href="tables/assessment.html" target="_top" title="assessment" alt="" coords="1290,1425,1506,1659">
+<area shape="rect" id="node39" href="tables/v_credential_expiration.html" target="_top" title="v_credential_expiration" alt="" coords="2276,2754,2584,2877">
+<area shape="rect" id="node40" href="tables/v_claim_reconciliation.html" target="_top" title="v_claim_reconciliation" alt="" coords="3283,2390,3578,2630">
+<area shape="rect" id="node41" href="tables/v_authorization_utilization.html" target="_top" title="v_authorization_utilization" alt="" coords="2260,1609,2599,1731">
+<area shape="rect" id="node42" href="tables/v_units_by_program_quarter.html" target="_top" title="v_units_by_program_quarter" alt="" coords="851,2210,1208,2303">
+<area shape="rect" id="node43" href="tables/v_oaa_client_profile.html" target="_top" title="v_oaa_client_profile" alt="" coords="881,2521,1178,2643">
+<area shape="rect" id="node44" href="tables/v_sd_budget_utilization.html" target="_top" title="v_sd_budget_utilization" alt="" coords="2643,2025,2952,2118">
+</map>
+                                        <a name='diagram'><img id="compactimpliedDegreeImg" src="diagrams/summary/relationships.implied.compact.png" usemap="#compactImpliedRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="largeimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="largeImpliedRelationshipsDiagram" name="largeImpliedRelationshipsDiagram">
+<area shape="rect" id="node1" href="tables/payroll_line.html" target="_top" title="payroll_line" alt="" coords="3487,1692,3788,2225">
+<area shape="rect" id="node5" href="tables/timesheet.html" target="_top" title="timesheet" alt="" coords="3175,2539,3364,3043">
+<area shape="rect" id="node6" href="tables/worker.html" target="_top" title="worker" alt="" coords="2783,1972,2999,2447">
+<area shape="rect" id="node10" href="tables/payroll_run.html" target="_top" title="payroll_run" alt="" coords="2781,1480,3000,1955">
+<area shape="rect" id="node2" href="tables/household_member.html" target="_top" title="household_member" alt="" coords="1733,2348,2006,2764">
+<area shape="rect" id="node25" href="tables/client.html" target="_top" title="client" alt="" coords="1399,3384,1647,4093">
+<area shape="rect" id="node3" href="tables/audit_log.html" target="_top" title="audit_log" alt="" coords="5,3249,227,3607">
+<area shape="rect" id="node4" href="tables/referral.html" target="_top" title="referral" alt="" coords="1744,1755,1995,2259">
+<area shape="rect" id="node8" href="tables/organization.html" target="_top" title="organization" alt="" coords="895,4947,1109,5421">
+<area shape="rect" id="node17" href="tables/referral_source.html" target="_top" title="referral_source" alt="" coords="1407,1813,1639,2024">
+<area shape="rect" id="node32" href="tables/staff.html" target="_top" title="staff" alt="" coords="1153,5628,1355,6044">
+<area shape="rect" id="node36" href="tables/program.html" target="_top" title="program" alt="" coords="1417,4917,1628,5333">
+<area shape="rect" id="node11" href="tables/self_direction_enrollment.html" target="_top" title="self_direction_enrollment" alt="" coords="2725,2572,3056,2959">
+<area shape="rect" id="node30" href="tables/provider.html" target="_top" title="provider" alt="" coords="2449,1755,2659,2259">
+<area shape="rect" id="node7" href="tables/claim.html" target="_top" title="claim" alt="" coords="2775,5903,3007,6465">
+<area shape="rect" id="node9" href="tables/role.html" target="_top" title="role" alt="" coords="1179,6505,1329,6687">
+<area shape="rect" id="node12" href="tables/claim_line.html" target="_top" title="claim_line" alt="" coords="3847,5873,4068,6377">
+<area shape="rect" id="node27" href="tables/service_delivery.html" target="_top" title="service_delivery" alt="" coords="3517,4407,3758,5204">
+<area shape="rect" id="node35" href="tables/service_definition.html" target="_top" title="service_definition" alt="" coords="2092,4583,2383,4940">
+<area shape="rect" id="node13" href="tables/care_plan_service.html" target="_top" title="care_plan_service" alt="" coords="2427,4967,2681,5324">
+<area shape="rect" id="node16" href="tables/care_plan.html" target="_top" title="care_plan" alt="" coords="2143,5833,2332,6191">
+<area shape="rect" id="node14" href="tables/sd_budget_line.html" target="_top" title="sd_budget_line" alt="" coords="3155,3060,3384,3359">
+<area shape="rect" id="node15" href="tables/emergency_contact.html" target="_top" title="emergency_contact" alt="" coords="1733,2781,2006,3080">
+<area shape="rect" id="node19" href="tables/intake_case.html" target="_top" title="intake_case" alt="" coords="1766,5065,1973,5452">
+<area shape="rect" id="node18" href="tables/client_napis_profile.html" target="_top" title="client_napis_profile" alt="" coords="1733,3097,2005,3631">
+<area shape="rect" id="node20" href="tables/authorized_unit_batch.html" target="_top" title="authorized_unit_batch" alt="" coords="3119,5265,3419,5681">
+<area shape="rect" id="node24" href="tables/service_authorization.html" target="_top" title="service_authorization" alt="" coords="2744,4931,3037,5405">
+<area shape="rect" id="node21" href="tables/remittance_line.html" target="_top" title="remittance_line" alt="" coords="4149,6365,4391,6693">
+<area shape="rect" id="node26" href="tables/remittance.html" target="_top" title="remittance" alt="" coords="3853,6395,4061,6723">
+<area shape="rect" id="node22" href="tables/staff_role.html" target="_top" title="staff_role" alt="" coords="1435,6476,1611,6687">
+<area shape="rect" id="node23" href="tables/caregiver.html" target="_top" title="caregiver" alt="" coords="1767,3648,1971,4064">
+<area shape="rect" id="node28" href="tables/consent.html" target="_top" title="consent" alt="" coords="1757,1351,1981,1737">
+<area shape="rect" id="node29" href="tables/care_plan_goal.html" target="_top" title="care_plan_goal" alt="" coords="2441,5804,2667,6191">
+<area shape="rect" id="node31" href="tables/timesheet_line.html" target="_top" title="timesheet_line" alt="" coords="3836,4407,4079,4764">
+<area shape="rect" id="node33" href="tables/client_program_enrollment.html" target="_top" title="client_program_enrollment" alt="" coords="1697,4153,2042,4511">
+<area shape="rect" id="node34" href="tables/worker_credential.html" target="_top" title="worker_credential" alt="" coords="3140,1856,3399,2155">
+<area shape="rect" id="node37" href="tables/staff_program_assignment.html" target="_top" title="staff_program_assignment" alt="" coords="1698,5469,2041,5651">
+<area shape="rect" id="node38" href="tables/assessment.html" target="_top" title="assessment" alt="" coords="2129,5175,2345,5620">
+<area shape="rect" id="node39" href="tables/v_credential_expiration.html" target="_top" title="v_credential_expiration" alt="" coords="3115,2208,3423,2483">
+<area shape="rect" id="node40" href="tables/v_claim_reconciliation.html" target="_top" title="v_claim_reconciliation" alt="" coords="4123,5371,4417,5939">
+<area shape="rect" id="node41" href="tables/v_authorization_utilization.html" target="_top" title="v_authorization_utilization" alt="" coords="3100,4879,3439,5212">
+<area shape="rect" id="node42" href="tables/v_units_by_program_quarter.html" target="_top" title="v_units_by_program_quarter" alt="" coords="1691,4600,2048,4904">
+<area shape="rect" id="node43" href="tables/v_oaa_client_profile.html" target="_top" title="v_oaa_client_profile" alt="" coords="1721,5776,2018,6315">
+<area shape="rect" id="node44" href="tables/v_sd_budget_utilization.html" target="_top" title="v_sd_budget_utilization" alt="" coords="3483,3060,3792,3393">
+</map>
+                                        <a name='diagram'><img id="largeimpliedDegreeImg" src="diagrams/summary/relationships.implied.large.png" usemap="#largeImpliedRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="bower/pdfmake/pdfmake.min.js"></script>
+        <script src="bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="bower/codemirror/codemirror.js"></script>
+        <script src="bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="relationships.js"></script>
+        <script src="schemaSpy.js"></script>
+    </body>
+</html>

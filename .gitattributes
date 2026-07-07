@@ -1,0 +1,8 @@
+# Treat all SchemaSpy-generated assets as binary so LF/CRLF doesn't churn.
+docs/schema/** -text
+*.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

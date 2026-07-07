@@ -1,0 +1,1338 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="elder_services" schema="public" type="PostgreSQL - 16.14 (Debian 16.14-1.pgdg13+1)">
+   <sequences>
+      <sequence increment="1" name="audit_log_audit_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="assessment" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="assessment_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="intake_case_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="intake_case_id" foreignKey="assessment_intake_case_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="intake_case"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="assessment_type" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="instrument" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="assessed_at" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="performed_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="assessment_performed_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="'{}'::jsonb" digits="0" id="6" name="body" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="frailty_score" nullable="true" remarks="" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="care_need_level" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="next_review_due" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="assessment_id" sequenceNumberInPK="1"/>
+         <index name="assessment_pkey" unique="true">
+            <column ascending="true" name="assessment_id"/>
+         </index>
+         <index name="assessment_body_idx" unique="false">
+            <column ascending="true" name="body"/>
+         </index>
+         <index name="assessment_intake_case_id_assessed_at_idx" unique="false">
+            <column ascending="true" name="intake_case_id"/>
+            <column ascending="true" name="assessed_at"/>
+         </index>
+         <checkConstraint constraint="((care_need_level = ANY (ARRAY['independent'::text, 'low'::text, 'moderate'::text, 'high'::text, 'end_of_life'::text])))" name="assessment_care_need_level_check"/>
+      </table>
+      <table name="audit_log" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('audit_log_audit_id_seq'::regclass)" digits="0" id="0" name="audit_id" nullable="false" remarks="" size="19" type="bigserial" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="1" name="audited_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="table_schema" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="table_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="pk" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="operation" nullable="false" remarks="" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="changed_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="before_row" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="after_row" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="9" name="changed_columns" nullable="true" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <primaryKey column="audit_id" sequenceNumberInPK="1"/>
+         <index name="audit_log_pkey" unique="true">
+            <column ascending="true" name="audit_id"/>
+         </index>
+         <index name="audit_log_table_schema_table_name_audited_at_idx" unique="false">
+            <column ascending="true" name="table_schema"/>
+            <column ascending="true" name="table_name"/>
+            <column ascending="false" name="audited_at"/>
+         </index>
+         <checkConstraint constraint="((operation = ANY (ARRAY['I'::bpchar, 'U'::bpchar, 'D'::bpchar])))" name="audit_log_operation_check"/>
+      </table>
+      <table name="authorized_unit_batch" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="batch_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="batch_id" foreignKey="service_delivery_batch_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="funding_source_line" foreignKey="timesheet_line_funding_source_line_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="authorization_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="authorization_id" foreignKey="authorized_unit_batch_authorization_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="service_authorization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="service_id" foreignKey="authorized_unit_batch_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_definition"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="3" name="unit_count" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="unit_type" nullable="false" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="rate_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="effective_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="end_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="8" name="amendment_no" nullable="false" remarks="" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="authorized_by" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="authorized_unit_batch_authorized_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="batch_id" sequenceNumberInPK="1"/>
+         <index name="authorized_unit_batch_pkey" unique="true">
+            <column ascending="true" name="batch_id"/>
+         </index>
+         <index name="authorized_unit_batch_authorization_id_idx" unique="false">
+            <column ascending="true" name="authorization_id"/>
+         </index>
+         <checkConstraint constraint="((end_date &gt;= effective_date))" name="authorized_unit_batch_check"/>
+         <checkConstraint constraint="((rate_cents &gt;= 0))" name="authorized_unit_batch_rate_cents_check"/>
+         <checkConstraint constraint="((unit_count &gt; (0)::numeric))" name="authorized_unit_batch_unit_count_check"/>
+      </table>
+      <table name="care_plan" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="care_plan_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="care_plan_id" foreignKey="care_plan_goal_care_plan_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="care_plan_goal"/>
+            <child column="care_plan_id" foreignKey="care_plan_service_care_plan_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="care_plan_service"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="intake_case_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="intake_case_id" foreignKey="care_plan_intake_case_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="intake_case"/>
+         </column>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="2" name="plan_version" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="effective_from" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="effective_to" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="author_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="authored_by" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="care_plan_authored_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="approved_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="care_plan_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="reviewed_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="summary" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="care_plan_id" sequenceNumberInPK="1"/>
+         <index name="care_plan_pkey" unique="true">
+            <column ascending="true" name="care_plan_id"/>
+         </index>
+         <index name="care_plan_intake_case_id_daterange_excl" unique="false">
+            <column ascending="true" name="intake_case_id"/>
+         </index>
+         <index name="care_plan_intake_case_id_effective_from_idx" unique="false">
+            <column ascending="true" name="intake_case_id"/>
+            <column ascending="true" name="effective_from"/>
+         </index>
+      </table>
+      <table name="care_plan_goal" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="goal_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="care_plan_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="care_plan_id" foreignKey="care_plan_goal_care_plan_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="care_plan"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="goal_text" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="domain" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="target_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="achieved" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="achieved_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="progress_pct" nullable="false" remarks="" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="goal_id" sequenceNumberInPK="1"/>
+         <index name="care_plan_goal_pkey" unique="true">
+            <column ascending="true" name="goal_id"/>
+         </index>
+         <index name="care_plan_goal_care_plan_id_idx" unique="false">
+            <column ascending="true" name="care_plan_id"/>
+         </index>
+         <checkConstraint constraint="(((progress_pct &gt;= 0) AND (progress_pct &lt;= 100)))" name="care_plan_goal_progress_pct_check"/>
+      </table>
+      <table name="care_plan_service" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="care_plan_service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="care_plan_service_id" foreignKey="service_authorization_care_plan_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_authorization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="care_plan_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="care_plan_id" foreignKey="care_plan_service_care_plan_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="care_plan"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="service_id" foreignKey="care_plan_service_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_definition"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="3" name="planned_units" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="planned_unit_type" nullable="false" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="planned_start_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="planned_end_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="frequency" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="5" digits="0" id="8" name="priority" nullable="false" remarks="" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="care_plan_service_id" sequenceNumberInPK="1"/>
+         <index name="care_plan_service_pkey" unique="true">
+            <column ascending="true" name="care_plan_service_id"/>
+         </index>
+         <index name="care_plan_service_care_plan_id_idx" unique="false">
+            <column ascending="true" name="care_plan_id"/>
+         </index>
+         <checkConstraint constraint="((planned_end_date &gt;= planned_start_date))" name="care_plan_service_check"/>
+         <checkConstraint constraint="((planned_units &gt; (0)::numeric))" name="care_plan_service_planned_units_check"/>
+      </table>
+      <table name="caregiver" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="caregiver_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="caregiver_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="caregiver_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="relationship" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="4" name="is_primary" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="is_paid" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="needs_respite" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="caregiver_role" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="caregiver_id" sequenceNumberInPK="1"/>
+         <index name="caregiver_pkey" unique="true">
+            <column ascending="true" name="caregiver_id"/>
+         </index>
+         <index name="caregiver_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+      </table>
+      <table name="claim" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="claim_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="claim_id" foreignKey="claim_line_claim_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="claim_line"/>
+            <child column="claim_id" foreignKey="remittance_line_claim_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="remittance_line"/>
+            <child column="claim_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="claim_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="claim_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="payer_org_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="claim_payer_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="'837'::edi_transaction_set" digits="0" id="4" name="edi_transaction" nullable="false" remarks="" size="2147483647" type="edi_transaction_set" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="claim_no" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="edi_control_no" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="service_date_from" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="service_date_to" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="9" name="total_charge_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="'draft'::claim_status" digits="0" id="10" name="status" nullable="false" remarks="" size="2147483647" type="claim_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="submitted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="accepted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="rejected_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="created_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="claim_created_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="15" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="16" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="claim_id" sequenceNumberInPK="1"/>
+         <index name="claim_pkey" unique="true">
+            <column ascending="true" name="claim_id"/>
+         </index>
+         <index name="claim_claim_no_key" unique="true">
+            <column ascending="true" name="claim_no"/>
+         </index>
+         <index name="claim_provider_id_status_idx" unique="false">
+            <column ascending="true" name="provider_id"/>
+            <column ascending="true" name="status"/>
+         </index>
+         <index name="claim_status_idx" unique="false">
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((service_date_to &gt;= service_date_from))" name="claim_check"/>
+         <checkConstraint constraint="((total_charge_cents &gt;= 0))" name="claim_total_charge_cents_check"/>
+      </table>
+      <table name="claim_line" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="claim_line_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="claim_line_id" foreignKey="remittance_line_claim_line_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="remittance_line"/>
+            <child column="claim_line_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="claim_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="claim_id" foreignKey="claim_line_claim_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="claim"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="delivery_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="delivery_id" foreignKey="claim_line_delivery_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="service_id" foreignKey="claim_line_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_definition"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="revenue_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="units" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="rate_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="billed_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="allowed_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="paid_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="10" name="copay_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="11" name="adjustment_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="'accepted'::claim_line_status" digits="0" id="12" name="line_status" nullable="false" remarks="" size="2147483647" type="claim_line_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="14" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="claim_line_id" sequenceNumberInPK="1"/>
+         <index name="claim_line_pkey" unique="true">
+            <column ascending="true" name="claim_line_id"/>
+         </index>
+         <index name="claim_line_claim_id_idx" unique="false">
+            <column ascending="true" name="claim_id"/>
+         </index>
+         <index name="claim_line_delivery_id_idx" unique="false">
+            <column ascending="true" name="delivery_id"/>
+         </index>
+      </table>
+      <table name="client" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="client_id" foreignKey="caregiver_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="caregiver"/>
+            <child column="client_id" foreignKey="client_napis_profile_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client_napis_profile"/>
+            <child column="client_id" foreignKey="client_program_enrollment_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client_program_enrollment"/>
+            <child column="client_id" foreignKey="consent_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="consent"/>
+            <child column="client_id" foreignKey="emergency_contact_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="emergency_contact"/>
+            <child column="client_id" foreignKey="household_member_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="household_member"/>
+            <child column="client_id" foreignKey="intake_case_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="intake_case"/>
+            <child column="client_id" foreignKey="referral_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral"/>
+            <child column="client_id" foreignKey="self_direction_enrollment_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="self_direction_enrollment"/>
+            <child column="client_id" foreignKey="service_authorization_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="service_authorization"/>
+            <child column="client_id" foreignKey="service_delivery_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="client_id" foreignKey="timesheet_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="client_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="client_number" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="legal_first_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_middle_name" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="legal_last_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="preferred_name" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="date_of_birth" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="'U'::sex_code" digits="0" id="8" name="sex" nullable="false" remarks="" size="2147483647" type="sex_code" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="ssn_last4" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="ssn_encrypted" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="primary_phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="primary_email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="preferred_language" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="14" name="interpreter_needed" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="mailing_address" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="physical_address" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="primary_org_staff_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="client_primary_org_staff_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="intake_first_contact" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="19" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="20" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="21" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="client_id" sequenceNumberInPK="1"/>
+         <index name="client_pkey" unique="true">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="client_date_of_birth_idx" unique="false">
+            <column ascending="true" name="date_of_birth"/>
+         </index>
+         <index name="client_legal_last_name_legal_first_name_idx" unique="false">
+            <column ascending="true" name="legal_last_name"/>
+            <column ascending="true" name="legal_first_name"/>
+         </index>
+         <index name="client_org_id_client_number_key" unique="true">
+            <column ascending="true" name="org_id"/>
+            <column ascending="true" name="client_number"/>
+         </index>
+         <index name="client_org_id_idx" unique="false">
+            <column ascending="true" name="org_id"/>
+         </index>
+         <checkConstraint constraint="(((ssn_last4 ~ '^[0-9]{4}$'::text) OR (ssn_last4 IS NULL)))" name="client_ssn_last4_check"/>
+      </table>
+      <table name="client_napis_profile" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="client_napis_profile_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="'U'::ethnicity_code" digits="0" id="1" name="ethnicity" nullable="false" remarks="" size="2147483647" type="ethnicity_code" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="2" name="race_oaa" nullable="false" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="'unknown'::living_arrangement" digits="0" id="3" name="living_arrangement" nullable="false" remarks="" size="2147483647" type="living_arrangement" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'unknown'::federal_poverty" digits="0" id="4" name="federal_poverty_pct" nullable="false" remarks="" size="2147483647" type="federal_poverty" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'unknown'::rurality" digits="0" id="5" name="is_rural" nullable="false" remarks="" size="2147483647" type="rurality" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="lives_in_facility" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="primary_language_oaa" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="english_proficiency" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="9" name="adl_help_needed" nullable="false" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="10" name="iadl_help_needed" nullable="false" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="'U'::yes_no_unknown" digits="0" id="11" name="has_family_caregiver" nullable="false" remarks="" size="2147483647" type="yes_no_unknown" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="12" name="is_targeted_minority" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="13" name="is_frail" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="14" name="disability_flag" nullable="false" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="15" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="client_id" sequenceNumberInPK="1"/>
+         <index name="client_napis_profile_pkey" unique="true">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <checkConstraint constraint="((english_proficiency = ANY (ARRAY['not_at_all'::text, 'not_well'::text, 'well'::text, 'very_well'::text, 'unknown'::text])))" name="client_napis_profile_english_proficiency_check"/>
+         <checkConstraint constraint="((race_oaa &lt;@ ARRAY['white'::text, 'black'::text, 'asian'::text, 'native_american'::text, 'hawaiian_pacific'::text, 'other'::text, 'unknown'::text, 'refused'::text]))" name="client_napis_profile_race_oaa_check"/>
+      </table>
+      <table name="client_program_enrollment" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="enrollment_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="client_program_enrollment_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="client_program_enrollment_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="member_id" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="effective_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="disenroll_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="eligibility_status" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="verified_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="client_program_enrollment_verified_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="8" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="enrollment_id" sequenceNumberInPK="1"/>
+         <index name="client_program_enrollment_pkey" unique="true">
+            <column ascending="true" name="enrollment_id"/>
+         </index>
+         <index name="client_program_enrollment_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="client_program_enrollment_client_id_program_id_daterange_excl" unique="false">
+            <column ascending="true" name="client_id"/>
+            <column ascending="true" name="program_id"/>
+         </index>
+         <index name="client_program_enrollment_program_id_effective_date_idx" unique="false">
+            <column ascending="true" name="program_id"/>
+            <column ascending="true" name="effective_date"/>
+         </index>
+         <checkConstraint constraint="((disenroll_date &gt;= effective_date))" name="client_program_enrollment_check"/>
+         <checkConstraint constraint="((eligibility_status = ANY (ARRAY['pending'::text, 'eligible'::text, 'denied'::text, 'terminated'::text, 'unknown'::text])))" name="client_program_enrollment_eligibility_status_check"/>
+      </table>
+      <table name="consent" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="consent_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="consent_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="consent_type" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="to_org_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="consent_to_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="scope_note" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="signed_at" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="expires_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="signed_by_client" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="pdf_document_ref" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="revoked_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="consent_id" sequenceNumberInPK="1"/>
+         <index name="consent_pkey" unique="true">
+            <column ascending="true" name="consent_id"/>
+         </index>
+         <index name="consent_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <checkConstraint constraint="((consent_type = ANY (ARRAY['services'::text, 'release_of_info'::text, 'self_direction'::text, 'billing'::text, 'data_sharing'::text, 'photo_media'::text])))" name="consent_consent_type_check"/>
+      </table>
+      <table name="emergency_contact" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="emergency_contact_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="emergency_contact_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="contact_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="relationship" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="6" name="priority_order" nullable="false" remarks="" size="5" type="int2" typeCode="5"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="emergency_contact_id" sequenceNumberInPK="1"/>
+         <index name="emergency_contact_pkey" unique="true">
+            <column ascending="true" name="emergency_contact_id"/>
+         </index>
+         <index name="emergency_contact_client_id_priority_order_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+            <column ascending="true" name="priority_order"/>
+         </index>
+      </table>
+      <table name="household_member" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="household_member_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="household_member_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="relationship" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="full_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="date_of_birth" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="lives_with_client" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="is_caregiver" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="is_emergency_contact" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="household_member_id" sequenceNumberInPK="1"/>
+         <index name="household_member_pkey" unique="true">
+            <column ascending="true" name="household_member_id"/>
+         </index>
+         <index name="household_member_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="household_member_client_id_idx1" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+      </table>
+      <table name="intake_case" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="intake_case_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="intake_case_id" foreignKey="assessment_intake_case_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="assessment"/>
+            <child column="intake_case_id" foreignKey="care_plan_intake_case_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="care_plan"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="intake_case_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="intake_case_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="case_number" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="opened_at" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="closed_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="case_type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="primary_staff_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="intake_case_primary_staff_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="closed_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="intake_case_id" sequenceNumberInPK="1"/>
+         <index name="intake_case_pkey" unique="true">
+            <column ascending="true" name="intake_case_id"/>
+         </index>
+         <index name="intake_case_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="intake_case_program_id_case_number_key" unique="true">
+            <column ascending="true" name="program_id"/>
+            <column ascending="true" name="case_number"/>
+         </index>
+         <index name="intake_case_program_id_opened_at_idx" unique="false">
+            <column ascending="true" name="program_id"/>
+            <column ascending="true" name="opened_at"/>
+         </index>
+         <checkConstraint constraint="((case_type = ANY (ARRAY['case_management'::text, 'homemaker'::text, 'transportation'::text, 'home_delivered_meals'::text, 'congregate_meals'::text, 'personal_care'::text, 'respite'::text, 'adult_foster_care'::text, 'self_direction'::text, 'other'::text])))" name="intake_case_case_type_check"/>
+      </table>
+      <table name="organization" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="payer_org_id" foreignKey="claim_payer_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim"/>
+            <child column="org_id" foreignKey="client_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client"/>
+            <child column="to_org_id" foreignKey="consent_to_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="consent"/>
+            <child column="parent_org_id" foreignKey="organization_parent_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+            <child column="org_id" foreignKey="program_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+            <child column="org_id" foreignKey="provider_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="provider"/>
+            <child column="referred_to_org" foreignKey="referral_referred_to_org_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral"/>
+            <child column="payer_org_id" foreignKey="remittance_payer_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="remittance"/>
+            <child column="org_id" foreignKey="staff_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+            <child column="org_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_oaa_client_profile"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="parent_org_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="organization_parent_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legal_name" nullable="false" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="short_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="tax_id_ein" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="org_type" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="primary_email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="primary_phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="website_url" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="mailing_address" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="physical_address" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="11" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="org_id" sequenceNumberInPK="1"/>
+         <index name="organization_pkey" unique="true">
+            <column ascending="true" name="org_id"/>
+         </index>
+         <index name="organization_lower_idx" unique="false"/>
+         <index name="organization_parent_org_id_idx" unique="false">
+            <column ascending="true" name="parent_org_id"/>
+         </index>
+         <index name="organization_tax_id_ein_key" unique="true">
+            <column ascending="true" name="tax_id_ein"/>
+         </index>
+         <checkConstraint constraint="((org_type = ANY (ARRAY['ASAP'::text, 'AAA'::text, 'FI'::text, 'PACE'::text, 'VENDOR'::text, 'MCO'::text, 'STATE'::text])))" name="organization_org_type_check"/>
+      </table>
+      <table name="payroll_line" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="payroll_line_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="payroll_run_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="payroll_run_id" foreignKey="payroll_line_payroll_run_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="payroll_run"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="timesheet_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="timesheet_id" foreignKey="payroll_line_timesheet_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="worker_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="worker_id" foreignKey="payroll_line_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="gross_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="federal_tax_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="6" name="state_tax_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="fica_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="8" name="medicare_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="9" name="fica_employer_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="10" name="medicare_employer_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="11" name="futa_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="12" name="suta_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="13" name="workers_comp_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="net_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="check_number" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="payroll_line_id" sequenceNumberInPK="1"/>
+         <index name="payroll_line_pkey" unique="true">
+            <column ascending="true" name="payroll_line_id"/>
+         </index>
+         <index name="payroll_line_payroll_run_id_idx" unique="false">
+            <column ascending="true" name="payroll_run_id"/>
+         </index>
+         <index name="payroll_line_worker_id_idx" unique="false">
+            <column ascending="true" name="worker_id"/>
+         </index>
+      </table>
+      <table name="payroll_run" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="payroll_run_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="payroll_run_id" foreignKey="payroll_line_payroll_run_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="payroll_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="fi_provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="payroll_run_fi_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="pay_period_start" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="pay_period_end" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="check_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="total_gross_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="6" name="total_taxes_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="total_net_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="'941R'::edi_transaction_set" digits="0" id="8" name="edi_transaction" nullable="false" remarks="" size="2147483647" type="edi_transaction_set" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="edi_control_no" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="submitted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="accepted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="rejected_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="payroll_run_id" sequenceNumberInPK="1"/>
+         <index name="payroll_run_pkey" unique="true">
+            <column ascending="true" name="payroll_run_id"/>
+         </index>
+         <index name="payroll_run_edi_control_no_key" unique="true">
+            <column ascending="true" name="edi_control_no"/>
+         </index>
+         <index name="payroll_run_fi_provider_id_pay_period_start_idx" unique="false">
+            <column ascending="true" name="fi_provider_id"/>
+            <column ascending="true" name="pay_period_start"/>
+         </index>
+         <checkConstraint constraint="((pay_period_end &gt;= pay_period_start))" name="payroll_run_check"/>
+      </table>
+      <table name="program" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="program_id" foreignKey="claim_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim"/>
+            <child column="program_id" foreignKey="client_program_enrollment_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client_program_enrollment"/>
+            <child column="program_id" foreignKey="intake_case_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="intake_case"/>
+            <child column="referred_to_program" foreignKey="referral_referred_to_program_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral"/>
+            <child column="program_id" foreignKey="self_direction_enrollment_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="self_direction_enrollment"/>
+            <child column="program_id" foreignKey="service_authorization_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_authorization"/>
+            <child column="program_id" foreignKey="service_definition_program_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="service_definition"/>
+            <child column="program_id" foreignKey="staff_program_assignment_program_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="staff_program_assignment"/>
+            <child column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_authorization_utilization"/>
+            <child column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_oaa_client_profile"/>
+            <child column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_units_by_program_quarter"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="program_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="program_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="funder_type" nullable="false" remarks="" size="2147483647" type="funder_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="effective_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="end_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="regulatory_basis" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'{}'::jsonb" digits="0" id="8" name="eligibility_rules" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="program_id" sequenceNumberInPK="1"/>
+         <index name="program_pkey" unique="true">
+            <column ascending="true" name="program_id"/>
+         </index>
+         <index name="program_funder_type_idx" unique="false">
+            <column ascending="true" name="funder_type"/>
+         </index>
+         <index name="program_org_id_idx" unique="false">
+            <column ascending="true" name="org_id"/>
+         </index>
+         <index name="program_org_id_program_code_key" unique="true">
+            <column ascending="true" name="org_id"/>
+            <column ascending="true" name="program_code"/>
+         </index>
+         <checkConstraint constraint="((end_date &gt;= effective_date))" name="program_check"/>
+      </table>
+      <table name="provider" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="provider_id" foreignKey="claim_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim"/>
+            <child column="fi_provider_id" foreignKey="payroll_run_fi_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="payroll_run"/>
+            <child column="fi_provider_id" foreignKey="self_direction_enrollment_fi_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="self_direction_enrollment"/>
+            <child column="provider_id" foreignKey="service_delivery_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="provider_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+            <child column="provider_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_credential_expiration"/>
+            <child column="provider_id" foreignKey="worker_provider_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="provider_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="provider_npi" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="provider_name" nullable="false" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="provider_type" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="contract_id" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="contract_start" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="contract_end" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="payment_model" nullable="false" remarks="" size="2147483647" type="payment_model" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="tax_id_ein" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="mailing_address" nullable="true" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="banking_info_ref" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="14" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="provider_id" sequenceNumberInPK="1"/>
+         <index name="provider_pkey" unique="true">
+            <column ascending="true" name="provider_id"/>
+         </index>
+         <index name="provider_org_id_idx" unique="false">
+            <column ascending="true" name="org_id"/>
+         </index>
+         <index name="provider_provider_npi_key" unique="true">
+            <column ascending="true" name="provider_npi"/>
+         </index>
+         <checkConstraint constraint="((provider_type = ANY (ARRAY['home_care_agency'::text, 'adult_day'::text, 'transportation'::text, 'meal_vendor'::text, 'personal_care'::text, 'homemaker'::text, 'respite'::text, 'fiscal_intermediary'::text, 'self_direction_eor'::text, 'other'::text])))" name="provider_provider_type_check"/>
+      </table>
+      <table name="referral" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="referral_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="referral_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="referral_source_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="referral_source_id" foreignKey="referral_referral_source_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral_source"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="referred_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="contact_method" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="presenting_need" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="requested_service" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="urgency" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="referred_to_program" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="referral_referred_to_program_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="referred_to_org" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="referral_referred_to_org_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="outcome" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="closed_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="received_by" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="referral_received_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="14" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="referral_id" sequenceNumberInPK="1"/>
+         <index name="referral_pkey" unique="true">
+            <column ascending="true" name="referral_id"/>
+         </index>
+         <index name="referral_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="referral_referred_at_idx" unique="false">
+            <column ascending="true" name="referred_at"/>
+         </index>
+         <checkConstraint constraint="((contact_method = ANY (ARRAY['phone'::text, 'in_person'::text, 'email'::text, 'web'::text, 'fax'::text, 'walk_in'::text])))" name="referral_contact_method_check"/>
+         <checkConstraint constraint="((outcome = ANY (ARRAY['information_only'::text, 'recommended_service'::text, 'opened_client'::text, 'referred_out'::text, 'closed_no_action'::text])))" name="referral_outcome_check"/>
+         <checkConstraint constraint="((urgency = ANY (ARRAY['emergency'::text, 'urgent'::text, 'routine'::text, 'information_only'::text])))" name="referral_urgency_check"/>
+      </table>
+      <table name="referral_source" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="referral_source_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="referral_source_id" foreignKey="referral_referral_source_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="category" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="referral_source_id" sequenceNumberInPK="1"/>
+         <index name="referral_source_pkey" unique="true">
+            <column ascending="true" name="referral_source_id"/>
+         </index>
+         <index name="referral_source_code_key" unique="true">
+            <column ascending="true" name="code"/>
+         </index>
+         <checkConstraint constraint="((category = ANY (ARRAY['self_family'::text, 'hospital'::text, 'clinic'::text, 'community_agency'::text, 'state_agency'::text, 'emergency_services'::text, 'media'::text, 'other'::text])))" name="referral_source_category_check"/>
+      </table>
+      <table name="remittance" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="remittance_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="remittance_id" foreignKey="remittance_line_remittance_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="remittance_line"/>
+            <child column="remittance_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="payer_org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="remittance_payer_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="edi_control_no" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'835'::edi_transaction_set" digits="0" id="3" name="edi_transaction" nullable="false" remarks="" size="2147483647" type="edi_transaction_set" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="received_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="total_paid_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="check_eft_ref" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="posted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="8" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="remittance_id" sequenceNumberInPK="1"/>
+         <index name="remittance_pkey" unique="true">
+            <column ascending="true" name="remittance_id"/>
+         </index>
+         <index name="remittance_edi_control_no_key" unique="true">
+            <column ascending="true" name="edi_control_no"/>
+         </index>
+      </table>
+      <table name="remittance_line" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="remittance_line_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="remittance_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="remittance_id" foreignKey="remittance_line_remittance_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="remittance"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="claim_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="claim_id" foreignKey="remittance_line_claim_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="claim"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="claim_line_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="claim_line_id" foreignKey="remittance_line_claim_line_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="payer_claim_control" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="paid_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="6" name="adjustment_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="reason_codes" nullable="true" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="8" name="posted_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="remittance_line_id" sequenceNumberInPK="1"/>
+         <index name="remittance_line_pkey" unique="true">
+            <column ascending="true" name="remittance_line_id"/>
+         </index>
+         <index name="remittance_line_claim_id_idx" unique="false">
+            <column ascending="true" name="claim_id"/>
+         </index>
+         <index name="remittance_line_remittance_id_idx" unique="false">
+            <column ascending="true" name="remittance_id"/>
+         </index>
+      </table>
+      <table name="role" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="role_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="role_id" foreignKey="staff_role_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff_role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="role_code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="role_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="3" name="can_phi" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="role_id" sequenceNumberInPK="1"/>
+         <index name="role_pkey" unique="true">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="role_role_code_key" unique="true">
+            <column ascending="true" name="role_code"/>
+         </index>
+      </table>
+      <table name="sd_budget_line" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="sd_budget_line_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="sd_budget_line_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_sd_budget_utilization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="enrollment_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="enrollment_id" foreignKey="sd_budget_line_enrollment_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="self_direction_enrollment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="category_code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="category_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="budgeted_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="5" name="spent_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="period_start" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="period_end" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <primaryKey column="sd_budget_line_id" sequenceNumberInPK="1"/>
+         <index name="sd_budget_line_pkey" unique="true">
+            <column ascending="true" name="sd_budget_line_id"/>
+         </index>
+         <checkConstraint constraint="((budgeted_cents &gt;= 0))" name="sd_budget_line_budgeted_cents_check"/>
+         <checkConstraint constraint="((period_end &gt;= period_start))" name="sd_budget_line_check"/>
+      </table>
+      <table name="self_direction_enrollment" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="enrollment_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="enrollment_id" foreignKey="sd_budget_line_enrollment_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="sd_budget_line"/>
+            <child column="enrollment_id" foreignKey="timesheet_enrollment_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="self_direction_enrollment_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="fi_provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="self_direction_enrollment_fi_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="self_direction_enrollment_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="enrollment_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="disenrollment_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="budget_amount_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="budget_period" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="8" name="copays_self_pay_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="representative_person" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="enrollment_id" sequenceNumberInPK="1"/>
+         <index name="self_direction_enrollment_pkey" unique="true">
+            <column ascending="true" name="enrollment_id"/>
+         </index>
+         <index name="self_direction_enrollment_client_id_fi_provider_id_dateran_excl" unique="false">
+            <column ascending="true" name="client_id"/>
+            <column ascending="true" name="fi_provider_id"/>
+         </index>
+         <index name="self_direction_enrollment_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <checkConstraint constraint="((budget_amount_cents &gt;= 0))" name="self_direction_enrollment_budget_amount_cents_check"/>
+         <checkConstraint constraint="((budget_period = ANY (ARRAY['monthly'::text, 'quarterly'::text, 'annual'::text])))" name="self_direction_enrollment_budget_period_check"/>
+         <checkConstraint constraint="((disenrollment_date &gt;= enrollment_date))" name="self_direction_enrollment_check"/>
+      </table>
+      <table name="service_authorization" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="authorization_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="authorization_id" foreignKey="authorized_unit_batch_authorization_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="authorized_unit_batch"/>
+            <child column="authorization_id" foreignKey="service_delivery_authorization_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="authorization_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_authorization_utilization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="care_plan_service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="care_plan_service_id" foreignKey="service_authorization_care_plan_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="care_plan_service"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="service_authorization_program_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="service_authorization_client_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="authorization_no" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'draft'::authorization_status" digits="0" id="5" name="status" nullable="false" remarks="" size="2147483647" type="authorization_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="approved_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="approved_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="service_authorization_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="effective_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="end_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="funding_basis" nullable="false" remarks="" size="2147483647" type="funding_basis" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="revenue_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="authorization_id" sequenceNumberInPK="1"/>
+         <index name="service_authorization_pkey" unique="true">
+            <column ascending="true" name="authorization_id"/>
+         </index>
+         <index name="service_authorization_authorization_no_key" unique="true">
+            <column ascending="true" name="authorization_no"/>
+         </index>
+         <index name="service_authorization_client_id_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+         </index>
+         <index name="service_authorization_program_id_effective_date_idx" unique="false">
+            <column ascending="true" name="program_id"/>
+            <column ascending="true" name="effective_date"/>
+         </index>
+         <index name="service_authorization_status_idx" unique="false">
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((end_date &gt;= effective_date))" name="service_authorization_check"/>
+      </table>
+      <table name="service_definition" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="service_id" foreignKey="authorized_unit_batch_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="authorized_unit_batch"/>
+            <child column="service_id" foreignKey="care_plan_service_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="care_plan_service"/>
+            <child column="service_id" foreignKey="claim_line_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim_line"/>
+            <child column="service_id" foreignKey="service_delivery_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="service_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="program_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="service_definition_program_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="service_code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="service_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="unit_type" nullable="false" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="default_rate_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="6" name="requires_authorization" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="is_self_direction_capable" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="effective_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="end_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <primaryKey column="service_id" sequenceNumberInPK="1"/>
+         <index name="service_definition_pkey" unique="true">
+            <column ascending="true" name="service_id"/>
+         </index>
+         <index name="service_definition_program_id_service_code_key" unique="true">
+            <column ascending="true" name="program_id"/>
+            <column ascending="true" name="service_code"/>
+         </index>
+         <checkConstraint constraint="((end_date &gt;= effective_date))" name="service_definition_check"/>
+         <checkConstraint constraint="((default_rate_cents &gt;= 0))" name="service_definition_default_rate_cents_check"/>
+      </table>
+      <table name="service_delivery" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="delivery_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="delivery_id" foreignKey="claim_line_delivery_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim_line"/>
+            <child column="delivery_id" foreignKey="timesheet_line_delivery_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet_line"/>
+            <child column="delivery_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_claim_reconciliation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="authorization_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="authorization_id" foreignKey="service_delivery_authorization_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_authorization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="batch_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="batch_id" foreignKey="service_delivery_batch_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="authorized_unit_batch"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="service_delivery_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="worker_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="worker_id" foreignKey="service_delivery_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="service_delivery_provider_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="service_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="service_id" foreignKey="service_delivery_service_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_definition"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="scheduled_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="scheduled_start" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="scheduled_end" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="actual_start" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="actual_end" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="delivered_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="13" name="unit_count" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="unit_type" nullable="false" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'scheduled'::delivery_status" digits="0" id="15" name="status" nullable="false" remarks="" size="2147483647" type="delivery_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="exception_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="notes" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="documented_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="service_delivery_documented_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="evv_reference" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="20" name="evv_verified_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="evv_location_gps" nullable="true" remarks="" size="2147483647" type="point" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="timesheet_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="timesheet_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="23" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="24" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="delivery_id" sequenceNumberInPK="1"/>
+         <index name="service_delivery_pkey" unique="true">
+            <column ascending="true" name="delivery_id"/>
+         </index>
+         <index name="service_delivery_authorization_id_scheduled_date_idx" unique="false">
+            <column ascending="true" name="authorization_id"/>
+            <column ascending="true" name="scheduled_date"/>
+         </index>
+         <index name="service_delivery_client_id_scheduled_date_idx" unique="false">
+            <column ascending="true" name="client_id"/>
+            <column ascending="true" name="scheduled_date"/>
+         </index>
+         <index name="service_delivery_delivered_date_idx" unique="false">
+            <column ascending="true" name="delivered_date"/>
+         </index>
+         <index name="service_delivery_status_idx" unique="false">
+            <column ascending="true" name="status"/>
+         </index>
+         <index name="service_delivery_worker_id_scheduled_date_idx" unique="false">
+            <column ascending="true" name="worker_id"/>
+            <column ascending="true" name="scheduled_date"/>
+         </index>
+         <checkConstraint constraint="((unit_count &gt; (0)::numeric))" name="service_delivery_unit_count_check"/>
+      </table>
+      <table name="staff" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="staff_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="performed_by" foreignKey="assessment_performed_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="assessment"/>
+            <child column="authorized_by" foreignKey="authorized_unit_batch_authorized_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="authorized_unit_batch"/>
+            <child column="approved_by" foreignKey="care_plan_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="care_plan"/>
+            <child column="authored_by" foreignKey="care_plan_authored_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="care_plan"/>
+            <child column="created_by" foreignKey="claim_created_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="claim"/>
+            <child column="primary_org_staff_id" foreignKey="client_primary_org_staff_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client"/>
+            <child column="verified_by" foreignKey="client_program_enrollment_verified_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="client_program_enrollment"/>
+            <child column="primary_staff_id" foreignKey="intake_case_primary_staff_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="intake_case"/>
+            <child column="received_by" foreignKey="referral_received_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="referral"/>
+            <child column="approved_by" foreignKey="service_authorization_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_authorization"/>
+            <child column="documented_by" foreignKey="service_delivery_documented_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="staff_id" foreignKey="staff_program_assignment_staff_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="staff_program_assignment"/>
+            <child column="staff_id" foreignKey="staff_role_staff_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="staff_role"/>
+            <child column="approved_by" foreignKey="timesheet_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="org_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="staff_org_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="email" nullable="false" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="title" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="license_number" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="license_state" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="password_hash" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="last_login_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="11" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="staff_id" sequenceNumberInPK="1"/>
+         <index name="staff_pkey" unique="true">
+            <column ascending="true" name="staff_id"/>
+         </index>
+         <index name="staff_email_key" unique="true">
+            <column ascending="true" name="email"/>
+         </index>
+         <index name="staff_org_id_idx" unique="false">
+            <column ascending="true" name="org_id"/>
+         </index>
+      </table>
+      <table name="staff_program_assignment" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="staff_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="staff_program_assignment_staff_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="program_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="staff_program_assignment_program_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="access_level" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="3" name="assigned_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="staff_id" sequenceNumberInPK="1"/>
+         <primaryKey column="program_id" sequenceNumberInPK="2"/>
+         <index name="staff_program_assignment_pkey" unique="true">
+            <column ascending="true" name="staff_id"/>
+            <column ascending="true" name="program_id"/>
+         </index>
+         <checkConstraint constraint="((access_level = ANY (ARRAY['read'::text, 'write'::text, 'admin'::text])))" name="staff_program_assignment_access_level_check"/>
+      </table>
+      <table name="staff_role" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="staff_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="staff_role_staff_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="role_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="role_id" foreignKey="staff_role_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="role"/>
+         </column>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="2" name="granted_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="granted_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="revoked_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="staff_id" sequenceNumberInPK="1"/>
+         <primaryKey column="role_id" sequenceNumberInPK="2"/>
+         <primaryKey column="granted_at" sequenceNumberInPK="3"/>
+         <index name="staff_role_pkey" unique="true">
+            <column ascending="true" name="staff_id"/>
+            <column ascending="true" name="role_id"/>
+            <column ascending="true" name="granted_at"/>
+         </index>
+      </table>
+      <table name="timesheet" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="timesheet_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="timesheet_id" foreignKey="payroll_line_timesheet_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="payroll_line"/>
+            <child column="timesheet_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="timesheet_id" foreignKey="timesheet_line_timesheet_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="timesheet_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="enrollment_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="enrollment_id" foreignKey="timesheet_enrollment_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="self_direction_enrollment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="worker_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="worker_id" foreignKey="timesheet_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="client_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="client_id" foreignKey="timesheet_client_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="client"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="period_start" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="period_end" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="0" digits="2" id="6" name="total_hours" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="guidance" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="submitted_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="approved_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="approved_by" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="staff_id" foreignKey="timesheet_approved_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="staff"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="voided_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="voided_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="14" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="timesheet_id" sequenceNumberInPK="1"/>
+         <index name="timesheet_pkey" unique="true">
+            <column ascending="true" name="timesheet_id"/>
+         </index>
+         <index name="timesheet_enrollment_id_period_start_idx" unique="false">
+            <column ascending="true" name="enrollment_id"/>
+            <column ascending="true" name="period_start"/>
+         </index>
+         <index name="timesheet_worker_id_period_start_idx" unique="false">
+            <column ascending="true" name="worker_id"/>
+            <column ascending="true" name="period_start"/>
+         </index>
+         <checkConstraint constraint="((period_end &gt;= period_start))" name="timesheet_check"/>
+         <checkConstraint constraint="((total_hours &gt;= (0)::numeric))" name="timesheet_total_hours_check"/>
+      </table>
+      <table name="timesheet_line" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="timesheet_line_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="timesheet_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="timesheet_id" foreignKey="timesheet_line_timesheet_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="timesheet"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="work_date" nullable="false" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="start_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="end_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="hours" nullable="false" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="pay_code" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="rate_cents" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="funding_source_line" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="batch_id" foreignKey="timesheet_line_funding_source_line_fkey" implied="false" onDeleteCascade="false" schema="public" table="authorized_unit_batch"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="delivery_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="delivery_id" foreignKey="timesheet_line_delivery_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+         </column>
+         <primaryKey column="timesheet_line_id" sequenceNumberInPK="1"/>
+         <index name="timesheet_line_pkey" unique="true">
+            <column ascending="true" name="timesheet_line_id"/>
+         </index>
+         <index name="timesheet_line_delivery_id_key" unique="true">
+            <column ascending="true" name="delivery_id"/>
+         </index>
+         <index name="timesheet_line_timesheet_id_idx" unique="false">
+            <column ascending="true" name="timesheet_id"/>
+         </index>
+         <index name="timesheet_line_work_date_idx" unique="false">
+            <column ascending="true" name="work_date"/>
+         </index>
+         <checkConstraint constraint="((hours &gt; (0)::numeric))" name="timesheet_line_hours_check"/>
+      </table>
+      <table name="v_authorization_utilization" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT a.authorization_id,&#10;    a.client_id,&#10;    a.program_id,&#10;    a.status,&#10;    a.end_date,&#10;    COALESCE(sum(b.unit_count), (0)::numeric) AS units_authorized,&#10;    COALESCE(sum(&#10;        CASE&#10;            WHEN (sd.status = ANY (ARRAY['delivered'::delivery_status, 'missed'::delivery_status, 'no_show'::delivery_status, 'scheduled'::delivery_status])) THEN sd.unit_count&#10;            ELSE NULL::numeric&#10;        END), (0)::numeric) AS units_consumed,&#10;    COALESCE(sum(&#10;        CASE&#10;            WHEN (sd.status = 'delivered'::delivery_status) THEN sd.unit_count&#10;            ELSE NULL::numeric&#10;        END), (0)::numeric) AS units_delivered,&#10;        CASE&#10;            WHEN (COALESCE(sum(b.unit_count), (0)::numeric) = (0)::numeric) THEN (0)::numeric&#10;            ELSE round(((100.0 * COALESCE(sum(&#10;            CASE&#10;                WHEN (sd.status = ANY (ARRAY['delivered'::delivery_status, 'missed'::delivery_status, 'no_show'::delivery_status, 'scheduled'::delivery_status])) THEN sd.unit_count&#10;                ELSE NULL::numeric&#10;            END), (0)::numeric)) / sum(b.unit_count)), 2)&#10;        END AS pct_of_authorized_consumed,&#10;        CASE&#10;            WHEN ((a.end_date &lt; CURRENT_DATE) AND (a.status = 'active'::authorization_status)) THEN true&#10;            ELSE false&#10;        END AS past_end_date&#10;   FROM ((service_authorization a&#10;     LEFT JOIN authorized_unit_batch b ON ((b.authorization_id = a.authorization_id)))&#10;     LEFT JOIN service_delivery sd ON ((sd.authorization_id = a.authorization_id)))&#10;  GROUP BY a.authorization_id, a.client_id, a.program_id, a.status, a.end_date;">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="authorization_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="authorization_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="service_authorization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="status" nullable="true" remarks="" size="2147483647" type="authorization_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="end_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="units_authorized" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="units_consumed" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="units_delivered" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="pct_of_authorized_consumed" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="past_end_date" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+      </table>
+      <table name="v_claim_reconciliation" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT sd.delivery_id,&#10;    sd.client_id,&#10;    sd.provider_id,&#10;    sd.service_id,&#10;    sd.delivered_date,&#10;    sd.unit_count,&#10;    sd.unit_type,&#10;    cn.claim_id,&#10;    cn.claim_no,&#10;    cn.status AS claim_status,&#10;    cl.claim_line_id,&#10;    cl.billed_cents,&#10;    cl.paid_cents,&#10;    cl.adjustment_cents,&#10;    cl.line_status AS claim_line_status,&#10;    rl.remittance_id,&#10;    rl.paid_cents AS remittance_paid_cents,&#10;    rl.reason_codes&#10;   FROM (((service_delivery sd&#10;     LEFT JOIN claim_line cl ON ((cl.delivery_id = sd.delivery_id)))&#10;     LEFT JOIN claim cn ON ((cn.claim_id = cl.claim_id)))&#10;     LEFT JOIN remittance_line rl ON ((rl.claim_line_id = cl.claim_line_id)))&#10;  WHERE (sd.status = 'delivered'::delivery_status);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="delivery_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="delivery_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="service_delivery"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="client_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="provider_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="service_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="service_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="service_definition"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="delivered_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="unit_count" nullable="true" remarks="" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="unit_type" nullable="true" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="claim_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="claim_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="claim"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="claim_no" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="claim_status" nullable="true" remarks="" size="2147483647" type="claim_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="claim_line_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="claim_line_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="claim_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="billed_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="paid_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="adjustment_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="claim_line_status" nullable="true" remarks="" size="2147483647" type="claim_line_status" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="remittance_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="remittance_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="remittance"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="remittance_paid_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="reason_codes" nullable="true" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+      </table>
+      <table name="v_credential_expiration" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT w.worker_id,&#10;    w.provider_id,&#10;    pr.provider_name,&#10;    wc.credential_name,&#10;    wc.license_number,&#10;    wc.issuing_state,&#10;    wc.expires_at,&#10;    (wc.expires_at - CURRENT_DATE) AS days_until_expiry&#10;   FROM ((worker_credential wc&#10;     JOIN worker w ON ((w.worker_id = wc.worker_id)))&#10;     JOIN provider pr ON ((pr.provider_id = w.provider_id)))&#10;  WHERE ((wc.expires_at IS NOT NULL) AND (wc.expires_at &lt;= (CURRENT_DATE + '60 days'::interval)) AND w.is_active);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="worker_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="worker_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="provider_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="provider_name" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="credential_name" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="license_number" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="issuing_state" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="expires_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="days_until_expiry" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+      </table>
+      <table name="v_oaa_client_profile" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT c.client_id,&#10;    c.org_id,&#10;    c.client_number,&#10;    p.program_id,&#10;    p.funder_type,&#10;    (EXTRACT(year FROM age((CURRENT_DATE)::timestamp with time zone, (c.date_of_birth)::timestamp with time zone)))::integer AS age_years,&#10;    c.sex,&#10;    n.ethnicity,&#10;    n.race_oaa,&#10;    n.living_arrangement,&#10;    n.federal_poverty_pct,&#10;    n.is_rural,&#10;    n.is_targeted_minority,&#10;    n.is_frail,&#10;        CASE&#10;            WHEN (c.date_of_birth &lt;= (CURRENT_DATE - '85 years'::interval)) THEN '85_plus'::text&#10;            WHEN (c.date_of_birth &lt;= (CURRENT_DATE - '75 years'::interval)) THEN '75_to_84'::text&#10;            WHEN (c.date_of_birth &lt;= (CURRENT_DATE - '60 years'::interval)) THEN '60_to_74'::text&#10;            ELSE 'under_60'::text&#10;        END AS age_bucket_oaa,&#10;    array_length(n.adl_help_needed, 1) AS adls_needing_help_count,&#10;    array_length(n.iadl_help_needed, 1) AS iadls_needing_help_count&#10;   FROM (((client c&#10;     JOIN client_napis_profile n ON ((n.client_id = c.client_id)))&#10;     JOIN client_program_enrollment e ON ((e.client_id = c.client_id)))&#10;     JOIN program p ON ((p.program_id = e.program_id)))&#10;  WHERE (c.is_active AND ((e.disenroll_date IS NULL) OR (e.disenroll_date &gt;= CURRENT_DATE)));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="client_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="org_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="org_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="organization"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="client_number" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="program_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="funder_type" nullable="true" remarks="" size="2147483647" type="funder_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="age_years" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="sex" nullable="true" remarks="" size="2147483647" type="sex_code" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="ethnicity" nullable="true" remarks="" size="2147483647" type="ethnicity_code" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="race_oaa" nullable="true" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="living_arrangement" nullable="true" remarks="" size="2147483647" type="living_arrangement" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="federal_poverty_pct" nullable="true" remarks="" size="2147483647" type="federal_poverty" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="is_rural" nullable="true" remarks="" size="2147483647" type="rurality" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_targeted_minority" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="is_frail" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="age_bucket_oaa" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="adls_needing_help_count" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="iadls_needing_help_count" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+      </table>
+      <table name="v_sd_budget_utilization" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT sd_budget_line_id,&#10;    enrollment_id,&#10;    category_code,&#10;    category_name,&#10;    budgeted_cents,&#10;    spent_cents,&#10;    (budgeted_cents - spent_cents) AS remaining_cents,&#10;        CASE&#10;            WHEN (budgeted_cents = 0) THEN (0)::numeric&#10;            ELSE round(((100.0 * (spent_cents)::numeric) / (budgeted_cents)::numeric), 2)&#10;        END AS pct_spent,&#10;    period_start,&#10;    period_end&#10;   FROM sd_budget_line bl;">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="sd_budget_line_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="sd_budget_line_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="sd_budget_line"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="enrollment_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="category_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="category_name" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="budgeted_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="spent_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="remaining_cents" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="pct_spent" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="period_start" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="period_end" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+      </table>
+      <table name="v_units_by_program_quarter" numRows="0" remarks="" schema="public" type="VIEW" viewSql=" SELECT p.program_id,&#10;    p.funder_type,&#10;    p.program_code,&#10;    s.service_code,&#10;    s.service_name,&#10;    sd.unit_type,&#10;    (date_trunc('quarter'::text, (sd.delivered_date)::timestamp with time zone))::date AS quarter,&#10;    sum(sd.unit_count) AS units_delivered,&#10;    count(DISTINCT sd.client_id) AS distinct_clients&#10;   FROM (((service_delivery sd&#10;     JOIN service_definition s ON ((s.service_id = sd.service_id)))&#10;     JOIN service_authorization a ON ((a.authorization_id = sd.authorization_id)))&#10;     JOIN program p ON ((p.program_id = a.program_id)))&#10;  WHERE ((sd.status = 'delivered'::delivery_status) AND (sd.delivered_date IS NOT NULL))&#10;  GROUP BY p.program_id, p.funder_type, p.program_code, s.service_code, s.service_name, sd.unit_type, ((date_trunc('quarter'::text, (sd.delivered_date)::timestamp with time zone))::date);">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="program_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="program_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="program"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="funder_type" nullable="true" remarks="" size="2147483647" type="funder_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="program_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="service_code" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="service_name" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="unit_type" nullable="true" remarks="" size="2147483647" type="unit_type" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="quarter" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="units_delivered" nullable="true" remarks="" size="0" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="distinct_clients" nullable="true" remarks="" size="19" type="int8" typeCode="-5"/>
+      </table>
+      <table name="worker" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="worker_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <child column="worker_id" foreignKey="payroll_line_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="payroll_line"/>
+            <child column="worker_id" foreignKey="service_delivery_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="service_delivery"/>
+            <child column="worker_id" foreignKey="timesheet_worker_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="timesheet"/>
+            <child column="worker_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="public" table="v_credential_expiration"/>
+            <child column="worker_id" foreignKey="worker_credential_worker_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="worker_credential"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="provider_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="provider_id" foreignKey="worker_provider_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="provider"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="ssn_encrypted" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="legal_first_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_last_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="date_of_birth" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="hire_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="termination_date" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="'{}'::text[]" digits="0" id="8" name="credentials" nullable="false" remarks="" size="2147483647" type="_text" typeCode="2003"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="preferred_phone" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="email" nullable="true" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="11" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="updated_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <primaryKey column="worker_id" sequenceNumberInPK="1"/>
+         <index name="worker_pkey" unique="true">
+            <column ascending="true" name="worker_id"/>
+         </index>
+         <index name="worker_provider_id_idx" unique="false">
+            <column ascending="true" name="provider_id"/>
+         </index>
+      </table>
+      <table name="worker_credential" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="gen_random_uuid()" digits="0" id="0" name="worker_credential_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="worker_id" nullable="false" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="worker_id" foreignKey="worker_credential_worker_id_fkey" implied="false" onDeleteCascade="true" schema="public" table="worker"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="credential_name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="issued_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="expires_at" nullable="true" remarks="" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="issuing_state" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="license_number" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="document_ref" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="worker_credential_id" sequenceNumberInPK="1"/>
+         <index name="worker_credential_pkey" unique="true">
+            <column ascending="true" name="worker_credential_id"/>
+         </index>
+         <index name="worker_credential_expires_at_idx" unique="false">
+            <column ascending="true" name="expires_at"/>
+         </index>
+      </table>
+   </tables>
+</database>
