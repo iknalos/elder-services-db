@@ -1,0 +1,23 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Local DB connection / secrets
+.env
+.env.local
+*.local.sql
+secrets/
+
+# Local logs
+*.log
+psql_error.txt
+
+# Postgres dump artifacts
+*.dump
+*.backup
+*.sql.gz
