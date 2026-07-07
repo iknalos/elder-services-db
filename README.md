@@ -1,7 +1,15 @@
-# Elder Services Case Management Database
+# ElderCase — Elder Services Case Management
+
+**Live demo:** https://iknalos.github.io/elder-services-db/app/ ·
+**Landing page:** https://iknalos.github.io/elder-services-db/ ·
+**Schema browser:** https://iknalos.github.io/elder-services-db/schema/
 
 A re-build of the kind of database structure used by Massachusetts ASAPs (Aging
-Service Access Points), modeled on the public reporting requirements every AAA must satisfy.
+Service Access Points), modeled on the public reporting requirements every AAA must satisfy —
+plus a working browser-based demo app (`docs/app/`) where you can enter clients, referrals,
+care plans, authorizations, deliveries, and claims. The demo runs 100% client-side
+(localStorage; no server, no PHI) and enforces the same business rules as the SQL triggers,
+e.g. deliveries cannot overdraw an authorization.
 
 It is a clean reimplementation derived
 from the public data dictionaries and regulations that, by law, dictate the

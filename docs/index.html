@@ -2,18 +2,169 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Elder Services DB — Schema Browser</title>
-<meta http-equiv="refresh" content="0; url=schema/">
-<link rel="canonical" href="schema/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ElderCase — Open-Source Case Management for Elder Services</title>
+<meta name="description" content="An open-source case-management data platform for Aging Services Access Points (ASAPs), Area Agencies on Aging, and home & community-based services nonprofits. PostgreSQL schema + live browser demo.">
 <style>
-  body{font:14px/1.5 system-ui,sans-serif;max-width:42em;margin:3em auto;padding:0 1em;color:#222}
-  code{background:#f4f4f4;padding:.1em .3em;border-radius:3px}
-  a{color:#06c}
+:root {
+  --navy: #16324f; --navy-dark: #0e2438; --teal: #1e7f78; --teal-light: #e4f2f1;
+  --ink: #24313f; --muted: #5f7183; --bg: #f7f9fb; --line: #e3e8ee;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.65 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: #fff; }
+a { color: var(--teal); }
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 22px; }
+
+header { background: var(--navy); color: #fff; }
+.nav { display: flex; align-items: center; gap: 18px; padding: 16px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
+.mark { width: 34px; height: 34px; border-radius: 8px; background: var(--teal); display: grid; place-items: center; font-size: 13px; }
+.nav-links { margin-left: auto; display: flex; gap: 18px; }
+.nav-links a { color: #cfdae6; text-decoration: none; font-size: 14.5px; }
+.nav-links a:hover { color: #fff; }
+
+.hero { padding: 64px 0 72px; text-align: left; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
+.hero h1 { font-size: 40px; line-height: 1.15; margin: 0 0 14px; }
+.hero h1 em { color: #7fd1c9; font-style: normal; }
+.hero p { color: #b9c8d6; font-size: 18px; margin: 0 0 26px; }
+.cta { display: inline-block; background: var(--teal); color: #fff; text-decoration: none; padding: 13px 26px; border-radius: 10px; font-weight: 600; font-size: 16px; }
+.cta:hover { background: #23948c; }
+.cta.ghost { background: transparent; border: 1px solid #3d5a76; margin-left: 10px; }
+.cta.ghost:hover { background: rgba(255,255,255,.06); }
+.hero-shot {
+  background: #fff; border-radius: 12px; padding: 14px; color: var(--ink);
+  box-shadow: 0 24px 60px rgba(0,0,0,.35); font-size: 12.5px;
+}
+.hero-shot .bar { display: flex; gap: 5px; margin-bottom: 10px; }
+.hero-shot .dot { width: 10px; height: 10px; border-radius: 50%; background: #e3e8ee; }
+.hero-shot .row { display: flex; justify-content: space-between; padding: 7px 6px; border-bottom: 1px solid var(--line); }
+.hero-shot .row:last-child { border: none; }
+.pill { background: #e3f4ea; color: #1e8a4c; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
+.pill.w { background: #fbf0dc; color: #b97a12; }
+.meter { background: #e8ecf1; height: 8px; border-radius: 99px; width: 90px; overflow: hidden; align-self: center; }
+.meter i { display: block; height: 100%; background: #35a06a; }
+
+section { padding: 58px 0; }
+section.alt { background: var(--bg); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+h2 { font-size: 28px; margin: 0 0 8px; color: var(--navy); }
+.lead { color: var(--muted); max-width: 720px; margin: 0 0 30px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.card h3 { margin: 0 0 6px; font-size: 16.5px; color: var(--navy); }
+.card p { margin: 0; font-size: 14.5px; color: var(--muted); }
+.card .ic { font-size: 22px; margin-bottom: 8px; }
+
+table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 14.5px; }
+th { text-align: left; background: var(--navy); color: #fff; padding: 10px 14px; font-size: 13px; }
+td { padding: 10px 14px; border-top: 1px solid var(--line); }
+td:first-child { font-weight: 600; }
+
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; font-weight: 600; color: var(--navy); }
+.flow span { background: var(--teal-light); padding: 8px 14px; border-radius: 999px; }
+.flow em { color: var(--muted); font-style: normal; }
+
+footer { background: var(--navy-dark); color: #8fa5ba; padding: 30px 0; font-size: 13.5px; }
+footer a { color: #9fd3ce; }
+
+@media (max-width: 800px) {
+  .hero { grid-template-columns: 1fr; padding: 40px 0 50px; }
+  .hero h1 { font-size: 30px; }
+  .nav-links { display: none; }
+}
 </style>
 </head>
 <body>
-<h1>Elder Services DB</h1>
-<p>Redirecting to the SchemaSpy browser… if it doesn't load, <a href="schema/">open it directly</a>.</p>
-<p>Source code: <a href="https://github.com/iknalos/elder-services-db">github.com/iknalos/elder-services-db</a></p>
+
+<header>
+  <div class="wrap">
+    <div class="nav">
+      <a class="brand" href="./"><span class="mark">EC</span> ElderCase</a>
+      <div class="nav-links">
+        <a href="app/">Live demo</a>
+        <a href="schema/">Schema browser</a>
+        <a href="https://github.com/iknalos/elder-services-db">GitHub</a>
+      </div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>Case management infrastructure for <em>elder services</em> nonprofits</h1>
+        <p>An open-source rebuild of the database structure behind Aging Services Access Points (ASAPs) and Area Agencies on Aging — referrals to care plans to service units to Medicaid claims, in one coherent schema.</p>
+        <a class="cta" href="app/">▶ Try the live demo</a>
+        <a class="cta ghost" href="schema/">Browse the schema</a>
+      </div>
+      <div class="hero-shot" aria-hidden="true">
+        <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="row"><strong>Whitfield, Eleanor</strong> <span class="pill">active</span></div>
+        <div class="row"><span>Personal Care · AUTH-2026-100</span> <span class="meter"><i style="width:78%"></i></span></div>
+        <div class="row"><span>Home Delivered Meals · daily</span> <span class="pill">delivered</span></div>
+        <div class="row"><span>HHA credential — D. Baptiste</span> <span class="pill w">expires 31d</span></div>
+        <div class="row"><span>Claim CLM-2026-00041</span> <span class="pill">paid $2,148.00</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>One unit of care, tracked end to end</h2>
+    <p class="lead">Elder-services agencies live and die by units — an hour of homemaking, a meal, a ride. ElderCase models the full lifecycle with referential integrity at every step, so funder reports reconcile by construction.</p>
+    <div class="flow">
+      <span>Referral</span> <em>→</em> <span>Intake &amp; assessment</span> <em>→</em>
+      <span>Care plan</span> <em>→</em> <span>Authorization</span> <em>→</em>
+      <span>Delivery</span> <em>→</em> <span>837 claim</span> <em>→</em> <span>835 payment</span>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>What's in the box</h2>
+    <p class="lead">A production-shaped PostgreSQL schema (30+ tables, triggers, reporting views) plus a working demo app you can try right now — no signup, no server, data stays in your browser.</p>
+    <div class="cards">
+      <div class="card"><div class="ic">👤</div><h3>Clients &amp; NAPIS demographics</h3><p>Identity kept separate from the OAA/NAPIS reporting profile, so de-identified funder extracts are one table dump.</p></div>
+      <div class="card"><div class="ic">☎</div><h3>Referrals &amp; intake</h3><p>Information &amp; Assistance contacts with source, urgency, and outcome tracking — the front door of every ASAP.</p></div>
+      <div class="card"><div class="ic">📋</div><h3>Assessments &amp; care plans</h3><p>Versioned, effective-dated care plans with goals and planned services, so "what did the plan say that day?" is always answerable.</p></div>
+      <div class="card"><div class="ic">✔</div><h3>Authorizations with guardrails</h3><p>Deliveries that would overdraw authorized units are rejected by a database trigger — replicated live in the demo.</p></div>
+      <div class="card"><div class="ic">💵</div><h3>Medicaid billing (837/835)</h3><p>Claims generated from delivered units at authorized rates, reconciled line-by-line against remittances.</p></div>
+      <div class="card"><div class="ic">🧭</div><h3>Self-direction / FI</h3><p>Consumer-directed budgets, timesheets, and payroll stubs for fiscal-intermediary programs.</p></div>
+      <div class="card"><div class="ic">📊</div><h3>Funder reports built in</h3><p>OAA client profile, units by program/quarter (SPR shape), utilization watch lists, credential expiry — as SQL views.</p></div>
+      <div class="card"><div class="ic">🔒</div><h3>Audit &amp; compliance posture</h3><p>Generic audit trigger on every table, PII flagged for encryption, consent tracking, EVV fields per the Cures Act.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Grounded in the rules agencies already follow</h2>
+    <p class="lead">This is a clean-room design derived from the public regulations and data dictionaries that legally shape every ASAP database — not from any vendor's proprietary system.</p>
+    <table>
+      <tr><th>Requirement source</th><th>Drives</th></tr>
+      <tr><td>MA EOEA SIMS</td><td>Referrals, intake, assessments, care plans</td></tr>
+      <tr><td>Older Americans Act / NAPIS (ACL)</td><td>Client demographics, service units, SPR counts</td></tr>
+      <tr><td>Medicaid HCBS waiver + 837/835 EDI</td><td>Authorizations, claims, remittances</td></tr>
+      <tr><td>Fiscal intermediary regulations</td><td>Self-direction, timesheets, employer-of-record</td></tr>
+      <tr><td>HIPAA / 42 CFR Part 2</td><td>Access control, audit, minimum-necessary design</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Try it in 10 seconds</h2>
+    <p class="lead">The demo ships with a fictional agency — six clients, active care plans, authorizations near their limits, an expiring credential, unbilled units ready to claim. Add a client, log a delivery, generate a claim, export a funder report to CSV. Everything persists in your browser only: no server, no accounts, no PHI risk.</p>
+    <a class="cta" href="app/">▶ Launch the demo</a>
+    <a class="cta ghost" style="border-color:var(--line);color:var(--navy)" href="https://github.com/iknalos/elder-services-db">Get the schema on GitHub</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><strong style="color:#fff">ElderCase</strong> · open-source elder-services case management ·
+      <a href="app/">demo</a> · <a href="schema/">schema browser</a> ·
+      <a href="https://github.com/iknalos/elder-services-db">github.com/iknalos/elder-services-db</a></p>
+    <p>All demo data is fictional. Clean-room implementation based on public regulations and data dictionaries (OAA/NAPIS, MA EOEA, CMS EDI). Not affiliated with any vendor or agency.</p>
+  </div>
+</footer>
+
 </body>
 </html>
